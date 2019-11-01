@@ -180,6 +180,147 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/01/JAVA%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9B%B8%E5%85%B3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wingkywingky">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sagittarius">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/01/JAVA%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9B%B8%E5%85%B3/" class="post-title-link" itemprop="url">JAVA多线程相关</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-01 15:41:49 / 修改时间：16:48:13" itemprop="dateCreated datePublished" datetime="2019-11-01T15:41:49+08:00">2019-11-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA多线程</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="线程与进程的区别"><a href="#线程与进程的区别" class="headerlink" title="线程与进程的区别"></a>线程与进程的区别</h3><ul>
+<li><p>线程是被CPU调度的基本单位，进程是能独立运行的基本单位，是系统分配资源的基本单位</p>
+</li>
+<li><p>创建销毁线程要比创建销毁进程成本低的多。（创建进程要，创建PCB,开辟虚拟地址空间，创建页表，维护映射关系，加载硬盘数据到内存，创建文件描述符，等等，而创建线程只要创建一个PCB指向进程的虚拟地址空间即可）</p>
+</li>
+<li><p>进程拥有自己独立的虚拟地址空间，而一个进程中的多个线程共享进程的虚拟地址空间</p>
+</li>
+<li><p>线程占用的资源要比进程少</p>
+</li>
+<li><p>线程缺乏访问控制，进程中的一个线程出错，会终止掉整个进程，从而导致其他线程也凉凉，而一个进程出错，不会影响另一个进程</p>
+</li>
+<li><p>线程和进程共享资源，但是有一部分数据是自己私有的？</p>
+</li>
+</ul>
+<h3 id="线程的状态转换"><a href="#线程的状态转换" class="headerlink" title="线程的状态转换"></a>线程的状态转换</h3><p><img src="https://user-gold-cdn.xitu.io/2018/4/30/163159b8a740b329?imageView2/0/w/1280/h/960/ignore-error/1" alt="线程状态转换图"></p>
+<p>线程创建之后调用start()方法开始运行，当调用wait(),join(),LockSupport.lock()方法线程会进入到WAITING状态，而同样的wait(long timeout)，sleep(long),join(long),LockSupport.parkNanos(),LockSupport.parkUtil()增加了超时等待的功能，也就是调用这些方法后线程会进入TIMED_WAITING状态，当超时等待时间到达后，线程会切换到Runable的状态，另外当WAITING和TIMED _WAITING状态时可以通过Object.notify(),Object.notifyAll()方法使线程转换到Runable状态。当线程出现资源竞争时，即等待获取锁的时候，线程会进入到BLOCKED阻塞状态，当线程获取锁时，线程进入到Runable状态。线程运行结束后，线程进入到TERMINATED状态，状态转换可以说是线程的生命周期。另外需要注意的是：</p>
+<ul>
+<li>当线程进入到synchronized方法或者synchronized代码块时，线程切换到的是BLOCKED状态，而使用java.util.concurrent.locks下lock进行加锁的时候线程切换的是WAITING或者TIMED_WAITING状态，因为lock会调用LockSupport的方法。</li>
+</ul>
+<p>用一个表格将上面六种状态进行一个总结归纳。</p>
+<p><img src="https://user-gold-cdn.xitu.io/2018/4/30/163159bceb956cb4?imageView2/0/w/1280/h/960/ignore-error/1" alt="JAVA线程的状态"></p>
+<h3 id="创建线程的几种方式"><a href="#创建线程的几种方式" class="headerlink" title="创建线程的几种方式"></a>创建线程的几种方式</h3><ol>
+<li><p><strong>实现Runnable接口</strong></p>
+<p>public class Demo1 implements Runnable{</p>
+<pre><code>private int count=10;
+
+@Override
+public synchronized void run() {
+    // TODO Auto-generated method stub
+    count--;
+    System.out.println(count);
+
+}
+
+public static void main(String[] args) {
+    Demo1 d = new Demo1();
+    for(int i =0;i&lt;5;i++) {
+    new Thread(d,&quot;THREAD&quot;+i).start();
+    }
+}</code></pre><p>}</p>
+</li>
+</ol>
+<ol start="2">
+<li><p>继承Thread类重写run()方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public class Demo1 extends Thread&#123;</span><br><span class="line"></span><br><span class="line">	private int count=10;</span><br><span class="line">	</span><br><span class="line">	@Override</span><br><span class="line">	public synchronized void run() &#123;</span><br><span class="line">		// TODO Auto-generated method stub</span><br><span class="line">		count--;</span><br><span class="line">		System.out.println(count);</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		Demo1 d = new Demo1();</span><br><span class="line">		for(int i =0;i&lt;5;i++) &#123;</span><br><span class="line">		new Thread(d,&quot;THREAD&quot;+i).start();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<ol start="3">
+<li><p>实现Callable接口</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">public class TestThread2 implements Callable&lt;String&gt;&#123;</span><br><span class="line">	</span><br><span class="line">	int count = 20;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public String call() throws Exception &#123;</span><br><span class="line">		// TODO Auto-generated method stub</span><br><span class="line">		for(int i=count;i&gt;=0;i--) &#123;</span><br><span class="line">			System.out.println(Thread.currentThread().getName()+&quot;当前票数&quot;+i);</span><br><span class="line">		&#125;</span><br><span class="line">		return &quot;sale out&quot;;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		Callable&lt;String&gt; c = new TestThread2();</span><br><span class="line">		FutureTask&lt;String&gt; futureTask = new FutureTask&lt;&gt;(c);</span><br><span class="line">		Thread t1 = new Thread(futureTask);</span><br><span class="line">		Thread t2 = new Thread(futureTask);</span><br><span class="line">		Thread t3 = new Thread(futureTask);</span><br><span class="line">		</span><br><span class="line">		t1.start();</span><br><span class="line">		t2.start();</span><br><span class="line">		t3.start();</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<ol start="4">
+<li><strong>使用Executor框架来创建线程池</strong></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public class Demo1 &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		ExecutorService threadPool = Executors.newCachedThreadPool();</span><br><span class="line">//      ExecutorService executorService = Executors.newFixedThreadPool(5);  </span><br><span class="line">//      ExecutorService executorService = Executors.newSingleThreadExecutor();</span><br><span class="line">		for(int i = 0;i&lt;5;i++) &#123;</span><br><span class="line">			threadPool.execute(new Test());</span><br><span class="line">			System.out.println(&quot;************* a&quot; + i + &quot; *************&quot;);</span><br><span class="line">		&#125;</span><br><span class="line">		threadPool.shutdown();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Test implements Runnable&#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void run() &#123;</span><br><span class="line">		// TODO Auto-generated method stub</span><br><span class="line">		 System.out.println(Thread.currentThread().getName() + &quot;线程被调用了。&quot;); </span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="几种方式的比较"><a href="#几种方式的比较" class="headerlink" title="几种方式的比较"></a><strong>几种方式的比较</strong></h4><p>采用实现Runnable、Callable接口的方式创见多线程时，优势是：</p>
+<p>线程类只是实现了Runnable接口或Callable接口，还可以继承其他类。 </p>
+<p>在这种方式下，多个线程可以共享同一个target对象，所以非常适合多个相同线程来处理同一份资源的情况，从而可以将CPU、代码和数据分开，形成清晰的模型，较好地体现了面向对象的思想。</p>
+<p>劣势是：</p>
+<p>编程稍微复杂，如果要访问当前线程，则必须使用Thread.currentThread()方法。</p>
+<p>使用继承Thread类的方式创建多线程时优势是：</p>
+<p>编写简单，如果需要访问当前线程，则无需使用Thread.currentThread()方法，直接使用this即可获得当前线程。</p>
+<p>劣势是：</p>
+<p>线程类已经继承了Thread类，所以不能再继承其他父类。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/01/J2EE%E5%9F%BA%E7%A1%80/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -205,7 +346,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2019-11-01 14:25:34 / 修改时间：15:21:35" itemprop="dateCreated datePublished" datetime="2019-11-01T14:25:34+08:00">2019-11-01</time>
+              <time title="创建时间：2019-11-01 14:25:34 / 修改时间：15:42:05" itemprop="dateCreated datePublished" datetime="2019-11-01T14:25:34+08:00">2019-11-01</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1090,83 +1231,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/30/%E8%BF%9C%E5%85%89%E8%BD%AF%E4%BB%B6%E9%9D%A2%E7%BB%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="wingkywingky">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sagittarius">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/10/30/%E8%BF%9C%E5%85%89%E8%BD%AF%E4%BB%B6%E9%9D%A2%E7%BB%8F/" class="post-title-link" itemprop="url">远光软件面经</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-10-30 23:39:10 / 修改时间：23:49:44" itemprop="dateCreated datePublished" datetime="2019-10-30T23:39:10+08:00">2019-10-30</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index">
-                    <span itemprop="name">面试相关</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="远光软件"><a href="#远光软件" class="headerlink" title="远光软件"></a><strong>远光软件</strong></h3><p>SpringBoot和Spring的区别</p>
-<p>SpringBoot自带的什么容器</p>
-<p>对SprinMVC的理解</p>
-<p>数据库的三范式</p>
-<p>数据库设计用到了第几范式</p>
-<p>用户登录拦截 用户验证</p>
-<p>账号密码怎么加密</p>
-<p>项目有什么亮点</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1217,20 +1281,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-count">15</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
