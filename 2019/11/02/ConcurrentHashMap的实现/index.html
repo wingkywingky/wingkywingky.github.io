@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.4.2',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="存储结构123456static final class HashEntry&amp;lt;K,V&amp;gt; &amp;#123;    final int hash;    final K key;    volatile V value;    volatile HashEntry&amp;lt;K,V&amp;gt; next;&amp;#125;  ConcurrentHashMap  和 HashMap 实现上类似，最主要的差别">
+<meta name="keywords" content="JAVA,JAVA多线程,并发,容器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ConcurrentHashMap的实现">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;11&#x2F;02&#x2F;ConcurrentHashMap%E7%9A%84%E5%AE%9E%E7%8E%B0&#x2F;index.html">
+<meta property="og:site_name" content="Sagittarius">
+<meta property="og:description" content="存储结构123456static final class HashEntry&amp;lt;K,V&amp;gt; &amp;#123;    final int hash;    final K key;    volatile V value;    volatile HashEntry&amp;lt;K,V&amp;gt; next;&amp;#125;  ConcurrentHashMap  和 HashMap 实现上类似，最主要的差别">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https:&#x2F;&#x2F;cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com&#x2F;db808eff-31d7-4229-a4ad-b8ae71870a3a.png">
+<meta property="og:updated_time" content="2019-11-02T15:11:56.691Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com&#x2F;db808eff-31d7-4229-a4ad-b8ae71870a3a.png">
+
+<link rel="canonical" href="http://yoursite.com/2019/11/02/ConcurrentHashMap%E7%9A%84%E5%AE%9E%E7%8E%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>ConcurrentHashMap的实现 | Sagittarius</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sagittarius</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/02/ConcurrentHashMap%E7%9A%84%E5%AE%9E%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wingkywingky">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sagittarius">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ConcurrentHashMap的实现
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-02 23:03:29 / 修改时间：23:11:56" itemprop="dateCreated datePublished" datetime="2019-11-02T23:03:29+08:00">2019-11-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA多线程</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="存储结构"><a href="#存储结构" class="headerlink" title="存储结构"></a>存储结构</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">HashEntry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">    <span class="keyword">final</span> K key;</span><br><span class="line">    <span class="keyword">volatile</span> V value;</span><br><span class="line">    <span class="keyword">volatile</span> HashEntry&lt;K,V&gt; next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ConcurrentHashMap  和 HashMap 实现上类似，最主要的差别是 ConcurrentHashMap  采用了分段锁（Segment），每个分段锁维护着几个桶（HashEntry），多个线程可以同时访问不同分段锁上的桶，从而使其并发度更高（并发度就是  Segment 的个数）。</p>
+<p>Segment 继承自 ReentrantLock。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Segment</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">ReentrantLock</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">2249069246763182397L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAX_SCAN_RETRIES =</span><br><span class="line">        Runtime.getRuntime().availableProcessors() &gt; <span class="number">1</span> ? <span class="number">64</span> : <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">transient</span> <span class="keyword">volatile</span> HashEntry&lt;K,V&gt;[] table;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">transient</span> <span class="keyword">int</span> count;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">transient</span> <span class="keyword">int</span> modCount;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">transient</span> <span class="keyword">int</span> threshold;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">float</span> loadFactor;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">final</span> Segment&lt;K,V&gt;[] segments;</span><br></pre></td></tr></table></figure>
+
+<p>默认的并发级别为 16，也就是说默认创建 16 个 Segment。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DEFAULT_CONCURRENCY_LEVEL = <span class="number">16</span>;</span><br></pre></td></tr></table></figure>
+
+<p> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/db808eff-31d7-4229-a4ad-b8ae71870a3a.png" alt="img"> </p>
+<h3 id="size-操作"><a href="#size-操作" class="headerlink" title="size()操作"></a>size()操作</h3><p>每个 Segment 维护了一个 count 变量来统计该 Segment 中的键值对个数。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The number of elements. Accessed only either within locks</span></span><br><span class="line"><span class="comment"> * or among other volatile reads that maintain visibility.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">transient</span> <span class="keyword">int</span> count;</span><br></pre></td></tr></table></figure>
+
+<p>在执行 size 操作时，需要遍历所有 Segment 然后把 count 累计起来。</p>
+<p>ConcurrentHashMap 在执行 size 操作时先尝试不加锁，如果连续两次不加锁操作得到的结果一致，那么可以认为这个结果是正确的。</p>
+<p>尝试次数使用 RETRIES_BEFORE_LOCK 定义，该值为 2，retries 初始值为 -1，因此尝试次数为 3。</p>
+<p>如果尝试的次数超过 3 次，就需要对每个 Segment 加锁。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Number of unsynchronized retries in size and containsValue</span></span><br><span class="line"><span class="comment"> * methods before resorting to locking. This is used to avoid</span></span><br><span class="line"><span class="comment"> * unbounded retries if tables undergo continuous modification</span></span><br><span class="line"><span class="comment"> * which would make it impossible to obtain an accurate result.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> RETRIES_BEFORE_LOCK = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">size</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Try a few times to get accurate count. On failure due to</span></span><br><span class="line">    <span class="comment">// continuous async changes in table, resort to locking.</span></span><br><span class="line">    <span class="keyword">final</span> Segment&lt;K,V&gt;[] segments = <span class="keyword">this</span>.segments;</span><br><span class="line">    <span class="keyword">int</span> size;</span><br><span class="line">    <span class="keyword">boolean</span> overflow; <span class="comment">// true if size overflows 32 bits</span></span><br><span class="line">    <span class="keyword">long</span> sum;         <span class="comment">// sum of modCounts</span></span><br><span class="line">    <span class="keyword">long</span> last = <span class="number">0L</span>;   <span class="comment">// previous sum</span></span><br><span class="line">    <span class="keyword">int</span> retries = -<span class="number">1</span>; <span class="comment">// first iteration isn't retry</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="comment">// 超过尝试次数，则对每个 Segment 加锁</span></span><br><span class="line">            <span class="keyword">if</span> (retries++ == RETRIES_BEFORE_LOCK) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; segments.length; ++j)</span><br><span class="line">                    ensureSegment(j).lock(); <span class="comment">// force creation</span></span><br><span class="line">            &#125;</span><br><span class="line">            sum = <span class="number">0L</span>;</span><br><span class="line">            size = <span class="number">0</span>;</span><br><span class="line">            overflow = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; segments.length; ++j) &#123;</span><br><span class="line">                Segment&lt;K,V&gt; seg = segmentAt(segments, j);</span><br><span class="line">                <span class="keyword">if</span> (seg != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    sum += seg.modCount;</span><br><span class="line">                    <span class="keyword">int</span> c = seg.count;</span><br><span class="line">                    <span class="keyword">if</span> (c &lt; <span class="number">0</span> || (size += c) &lt; <span class="number">0</span>)</span><br><span class="line">                        overflow = <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 连续两次得到的结果一致，则认为这个结果是正确的</span></span><br><span class="line">            <span class="keyword">if</span> (sum == last)</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            last = sum;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (retries &gt; RETRIES_BEFORE_LOCK) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; segments.length; ++j)</span><br><span class="line">                segmentAt(segments, j).unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> overflow ? Integer.MAX_VALUE : size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="改动"><a href="#改动" class="headerlink" title="改动"></a>改动</h3><p>JDK 1.7 使用分段锁机制来实现并发更新操作，核心类为 Segment，它继承自重入锁 ReentrantLock，并发度与 Segment 数量相等。</p>
+<p>JDK 1.8 使用了 CAS 操作来支持更高的并发度，在 CAS 操作失败时使用内置锁 synchronized。</p>
+<p>并且 JDK 1.8 的实现也在链表过长时会转换为红黑树。</p>
+<p>synchronized只锁定当前链表或红黑二叉树的首节点，这样只要hash不冲突，就不会产生并发，效率又提升N倍。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JAVA/" rel="tag"># JAVA</a>
+              <a href="/tags/JAVA%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag"># JAVA多线程</a>
+              <a href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag"># 并发</a>
+              <a href="/tags/%E5%AE%B9%E5%99%A8/" rel="tag"># 容器</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2019/11/02/%E7%BA%BF%E7%A8%8B%E6%B1%A0/" rel="next" title="线程池">
+                  <i class="fa fa-chevron-left"></i> 线程池
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#存储结构"><span class="nav-number">1.</span> <span class="nav-text">存储结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#size-操作"><span class="nav-number">2.</span> <span class="nav-text">size()操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#改动"><span class="nav-number">3.</span> <span class="nav-text">改动</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <img class="site-author-image" itemprop="image" alt="wingkywingky"
+    src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">wingkywingky</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wingkywingky</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.0.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.4.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
