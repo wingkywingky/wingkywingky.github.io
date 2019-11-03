@@ -180,6 +180,166 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/03/Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wingkywingky">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sagittarius">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/03/Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/" class="post-title-link" itemprop="url">Java内存区域</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-03 21:15:50 / 修改时间：21:34:14" itemprop="dateCreated datePublished" datetime="2019-11-03T21:15:50+08:00">2019-11-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="运行时的数据区域"><a href="#运行时的数据区域" class="headerlink" title="运行时的数据区域"></a>运行时的数据区域</h3><p>Java 虚拟机在执行 Java 程序的过程中会把它管理的内存划分成若干个不同的数据区域。JDK. 1.8 和之前的版本略有不同，下面会介绍到。</p>
+<p><strong>JDK 1.8 之前：</strong></p>
+<p>   <img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-3/JVM%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA%E5%9F%9F.png" alt="img"> </p>
+<p><strong>JDK 1.8 ：</strong></p>
+<p>   <img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-3Java%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA%E5%9F%9FJDK1.8.png" alt="img"> </p>
+<p><strong>线程私有的：</strong></p>
+<ul>
+<li>程序计数器</li>
+<li>虚拟机栈</li>
+<li>本地方法栈</li>
+</ul>
+<p><strong>线程共享的：</strong></p>
+<ul>
+<li>堆</li>
+<li>方法区</li>
+<li>直接内存 (非运行时数据区的一部分)</li>
+</ul>
+<h4 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h4><p>程序计数器是一块较小的内存空间，可以看作是当前线程所执行的字节码的行号指示器。<strong>字节码解释器工作时通过改变这个计数器的值来选取下一条需要执行的字节码指令，分支、循环、跳转、异常处理、线程恢复等功能都需要依赖这个计数器来完成。</strong></p>
+<p>另外，<strong>为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的程序计数器，各线程之间计数器互不影响，独立存储，我们称这类内存区域为“线程私有”的内存。</strong></p>
+<p><strong>从上面的介绍中我们知道程序计数器主要有两个作用：</strong></p>
+<ol>
+<li>字节码解释器通过改变程序计数器来依次读取指令，从而实现代码的流程控制，如：顺序执行、选择、循环、异常处理。</li>
+<li>在多线程的情况下，程序计数器用于记录当前线程执行的位置，从而当线程被切换回来的时候能够知道该线程上次运行到哪儿了。</li>
+</ol>
+<p><strong>注意：程序计数器是唯一一个不会出现 OutOfMemoryError 的内存区域，它的生命周期随着线程的创建而创建，随着线程的结束而死亡。</strong></p>
+<h4 id="Java虚拟机栈"><a href="#Java虚拟机栈" class="headerlink" title="Java虚拟机栈"></a>Java虚拟机栈</h4><p><strong>与程序计数器一样，Java 虚拟机栈也是线程私有的，它的生命周期和线程相同，描述的是 Java 方法执行的内存模型，每次方法调用的数据都是通过栈传递的。</strong></p>
+<p><strong>Java 内存可以粗糙的区分为堆内存（Heap）和栈内存 (Stack),其中栈就是现在说的虚拟机栈，或者说是虚拟机栈中局部变量表部分。</strong> （实际上，Java 虚拟机栈是由一个个栈帧组成，而每个栈帧中都拥有：局部变量表、操作数栈、动态链接、方法出口信息。）</p>
+<p><strong>局部变量表主要存放了编译器可知的各种数据类型</strong>（boolean、byte、char、short、int、float、long、double）、<strong>对象引用</strong>（reference 类型，它不同于对象本身，可能是一个指向对象起始地址的引用指针，也可能是指向一个代表对象的句柄或其他与此对象相关的位置）。</p>
+<p><strong>Java 虚拟机栈会出现两种异常：StackOverFlowError 和 OutOfMemoryError。</strong></p>
+<ul>
+<li><strong>StackOverFlowError：</strong> 若 Java 虚拟机栈的内存大小不允许动态扩展，那么当线程请求栈的深度超过当前 Java 虚拟机栈的最大深度的时候，就抛出 StackOverFlowError 异常。</li>
+<li><strong>OutOfMemoryError：</strong> 若 Java 虚拟机栈的内存大小允许动态扩展，且当线程请求栈时内存用完了，无法再动态扩展了，此时抛出 OutOfMemoryError 异常。</li>
+</ul>
+<p>Java 虚拟机栈也是线程私有的，每个线程都有各自的 Java 虚拟机栈，而且随着线程的创建而创建，随着线程的死亡而死亡。</p>
+<p><strong>扩展：那么方法/函数如何调用？</strong></p>
+<p>Java 栈可用类比数据结构中栈，Java 栈中保存的主要内容是栈帧，每一次函数调用都会有一个对应的栈帧被压入 Java 栈，每一个函数调用结束后，都会有一个栈帧被弹出。</p>
+<p>Java 方法有两种返回方式：</p>
+<ol>
+<li>return 语句。</li>
+<li>抛出异常。</li>
+</ol>
+<p>不管哪种返回方式都会导致栈帧被弹出。</p>
+<h4 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h4><p>和虚拟机栈所发挥的作用非常相似，区别是： <strong>虚拟机栈为虚拟机执行 Java 方法 （也就是字节码）服务，而本地方法栈则为虚拟机使用到的 Native 方法服务。</strong> 在 HotSpot 虚拟机中和 Java 虚拟机栈合二为一。</p>
+<p>本地方法被执行的时候，在本地方法栈也会创建一个栈帧，用于存放该本地方法的局部变量表、操作数栈、动态链接、出口信息。</p>
+<p>方法执行完毕后相应的栈帧也会出栈并释放内存空间，也会出现 StackOverFlowError 和 OutOfMemoryError 两种异常。</p>
+<h4 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h4><p>Java 虚拟机所管理的内存中最大的一块，Java 堆是所有线程共享的一块内存区域，在虚拟机启动时创建。<strong>此内存区域的唯一目的就是存放对象实例，几乎所有的对象实例以及数组都在这里分配内存。</strong></p>
+<p>Java 堆是垃圾收集器管理的主要区域，因此也被称作<strong>GC 堆（Garbage Collected Heap）</strong>.从垃圾回收的角度，由于现在收集器基本都采用分代垃圾收集算法，所以 Java 堆还可以细分为：新生代和老年代：再细致一点有：Eden 空间、From Survivor、To Survivor 空间等。<strong>进一步划分的目的是更好地回收内存，或者更快地分配内存。</strong></p>
+<p>   <img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-3%E5%A0%86%E7%BB%93%E6%9E%84.png" alt="img"> </p>
+<p>上图所示的 eden 区、s0 区、s1 区都属于新生代，tentired 区属于老年代。大部分情况，对象都会首先在 Eden  区域分配，在一次新生代垃圾回收后，如果对象还存活，则会进入 s0 或者 s1，并且对象的年龄还会加 1(Eden 区-&gt;Survivor  区后对象的初始年龄变为 1)，当它的年龄增加到一定程度（默认为 15 岁），就会被晋升到老年代中。对象晋升到老年代的年龄阈值，可以通过参数 <code>-XX:MaxTenuringThreshold</code> 来设置。</p>
+<h4 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h4><p>方法区与 Java 堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。虽然 Java 虚拟机规范把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做 <strong>Non-Heap（非堆）</strong>，目的应该是与 Java 堆区分开来。</p>
+<h4 id="运行时常量区"><a href="#运行时常量区" class="headerlink" title="运行时常量区"></a>运行时常量区</h4><p>运行时常量池是方法区的一部分。Class 文件中除了有类的版本、字段、方法、接口等描述信息外，还有常量池信息（用于存放编译期生成的各种字面量和符号引用）</p>
+<p>既然运行时常量池是方法区的一部分，自然受到方法区内存的限制，当常量池无法再申请到内存时会抛出 OutOfMemoryError 异常。</p>
+<p><strong>JDK1.7 及之后版本的 JVM 已经将运行时常量池从方法区中移了出来，在 Java 堆（Heap）中开辟了一块区域存放运行时常量池。</strong> </p>
+<p><img src="http://my-blog-to-use.oss-cn-beijing.aliyuncs.com/18-9-14/26038433.jpg" alt="img"> ——图片来源：<a href="https://blog.csdn.net/wangbiao007/article/details/78545189" target="_blank" rel="noopener">https://blog.csdn.net/wangbiao007/article/details/78545189</a></p>
+<h4 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h4><p><strong>直接内存并不是虚拟机运行时数据区的一部分，也不是虚拟机规范中定义的内存区域，但是这部分内存也被频繁地使用。而且也可能导致 OutOfMemoryError 异常出现。</strong></p>
+<p>JDK1.4 中新加入的 <strong>NIO(New Input/Output) 类</strong>，引入了一种基于<strong>通道（Channel）</strong> 与<strong>缓存区（Buffer）</strong> 的 I/O 方式，它可以直接使用 Native 函数库直接分配堆外内存，然后通过一个存储在 Java 堆中的 DirectByteBuffer 对象作为这块内存的引用进行操作。这样就能在一些场景中显著提高性能，因为<strong>避免了在 Java 堆和 Native 堆之间来回复制数据</strong>。</p>
+<p>本机直接内存的分配不会受到 Java 堆的限制，但是，既然是内存就会受到本机总内存大小以及处理器寻址空间的限制。</p>
+<h3 id="虚拟机对象探秘"><a href="#虚拟机对象探秘" class="headerlink" title="虚拟机对象探秘"></a>虚拟机对象探秘</h3><h4 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h4><p>下图便是 Java 对象的创建过程，我建议最好是能默写出来，并且要掌握每一步在做什么。 <img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-6/Java%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%BF%87%E7%A8%8B.png" alt="Java创建对象的过程"></p>
+<p><strong>Step1:类加载检查</strong></p>
+<p> 虚拟机遇到一条 new 指令时，首先将去检查这个指令的参数是否能在常量池中定位到这个类的符号引用，并且检查这个符号引用代表的类是否已被加载过、解析和初始化过。如果没有，那必须先执行相应的类加载过程。</p>
+<p><strong>Step2:分配内存</strong></p>
+<p>在<strong>类加载检查</strong>通过后，接下来虚拟机将为新生对象<strong>分配内存</strong>。对象所需的内存大小在类加载完成后便可确定，为对象分配空间的任务等同于把一块确定大小的内存从 Java 堆中划分出来。<strong>分配方式</strong>有 <strong>“指针碰撞”</strong> 和 <strong>“空闲列表”</strong> 两种，<strong>选择那种分配方式由 Java 堆是否规整决定，而 Java 堆是否规整又由所采用的垃圾收集器是否带有压缩整理功能决定</strong>。</p>
+<p><strong>内存分配的两种方式：（补充内容，需要掌握）</strong></p>
+<p>选择以上两种方式中的哪一种，取决于 Java 堆内存是否规整。而 Java 堆内存是否规整，取决于 GC 收集器的算法是”标记-清除”，还是”标记-整理”（也称作”标记-压缩”），值得注意的是，复制算法内存也是规整的</p>
+<p><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-6/%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%BC%8F.png" alt="内存分配的两种方式"></p>
+<p><strong>内存分配并发问题（补充内容，需要掌握）</strong></p>
+<p>在创建对象的时候有一个很重要的问题，就是线程安全，因为在实际开发过程中，创建对象是很频繁的事情，作为虚拟机来说，必须要保证线程是安全的，通常来讲，虚拟机采用两种方式来保证线程安全：</p>
+<ul>
+<li><strong>CAS+失败重试：</strong> CAS 是乐观锁的一种实现方式。所谓乐观锁就是，每次不加锁而是假设没有冲突而去完成某项操作，如果因为冲突失败就重试，直到成功为止。<strong>虚拟机采用 CAS 配上失败重试的方式保证更新操作的原子性。</strong></li>
+<li><strong>TLAB：</strong> 为每一个线程预先在 Eden 区分配一块儿内存，JVM 在给线程中的对象分配内存时，首先在 TLAB 分配，当对象大于 TLAB 中的剩余内存或 TLAB 的内存已用尽时，再采用上述的 CAS 进行内存分配</li>
+</ul>
+<p><strong>Step3:初始化零值</strong></p>
+<p>内存分配完成后，虚拟机需要将分配到的内存空间都初始化为零值（不包括对象头），这一步操作保证了对象的实例字段在 Java 代码中可以不赋初始值就直接使用，程序能访问到这些字段的数据类型所对应的零值。</p>
+<p><strong>Step4:设置对象头</strong></p>
+<p>初始化零值完成之后，<strong>虚拟机要对对象进行必要的设置</strong>，例如这个对象是那个类的实例、如何才能找到类的元数据信息、对象的哈希码、对象的 GC 分代年龄等信息。 <strong>这些信息存放在对象头中。</strong> 另外，根据虚拟机当前运行状态的不同，如是否启用偏向锁等，对象头会有不同的设置方式。</p>
+<p><strong>Step5:执行 init 方法</strong></p>
+<p> 在上面工作都完成之后，从虚拟机的视角来看，一个新的对象已经产生了，但从 Java 程序的视角来看，对象创建才刚开始，<code>&lt;init&gt;</code> 方法还没有执行，所有的字段都还为零。所以一般来说，执行 new 指令之后会接着执行 <code>&lt;init&gt;</code> 方法，把对象按照程序员的意愿进行初始化，这样一个真正可用的对象才算完全产生出来。</p>
+<h4 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h4><p>在 Hotspot 虚拟机中，对象在内存中的布局可以分为 3 块区域：<strong>对象头</strong>、<strong>实例数据</strong>和<strong>对齐填充</strong>。</p>
+<p><strong>Hotspot 虚拟机的对象头包括两部分信息</strong>，<strong>第一部分用于存储对象自身的自身运行时数据</strong>（哈希码、GC 分代年龄、锁状态标志等等），<strong>另一部分是类型指针</strong>，即对象指向它的类元数据的指针，虚拟机通过这个指针来确定这个对象是那个类的实例。</p>
+<p><strong>实例数据部分是对象真正存储的有效信息</strong>，也是在程序中所定义的各种类型的字段内容。</p>
+<p><strong>对齐填充部分不是必然存在的，也没有什么特别的含义，仅仅起占位作用。</strong> 因为 Hotspot 虚拟机的自动内存管理系统要求对象起始地址必须是 8 字节的整数倍，换句话说就是对象的大小必须是 8 字节的整数倍。而对象头部分正好是 8 字节的倍数（1 倍或 2 倍），因此，当对象实例数据部分没有对齐时，就需要通过对齐填充来补全。</p>
+<h4 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h4><p>建立对象就是为了使用对象，我们的 Java 程序通过栈上的 reference 数据来操作堆上的具体对象。对象的访问方式由虚拟机实现而定，目前主流的访问方式有<strong>①使用句柄</strong>和<strong>②直接指针</strong>两种：</p>
+<ol>
+<li><p><strong>句柄：</strong> 如果使用句柄的话，那么 Java 堆中将会划分出一块内存来作为句柄池，reference 中存储的就是对象的句柄地址，而句柄中包含了对象实例数据与类型数据各自的具体地址信息；</p>
+<p><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-6/%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D-%E4%BD%BF%E7%94%A8%E5%8F%A5%E6%9F%84.png" alt="对象的访问定位-使用句柄"></p>
+</li>
+<li><p><strong>直接指针：</strong>  如果使用直接指针访问，那么 Java 堆对象的布局中就必须考虑如何放置访问类型数据的相关信息，而 reference 中存储的直接就是对象的地址。</p>
+</li>
+</ol>
+<p><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-6/%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D-%E7%9B%B4%E6%8E%A5%E6%8C%87%E9%92%88.png" alt="对象的访问定位-直接指针"></p>
+<p><strong>这两种对象访问方式各有优势。使用句柄来访问的最大好处是  reference 中存储的是稳定的句柄地址，在对象被移动时只会改变句柄中的实例数据指针，而 reference  本身不需要修改。使用直接指针访问方式最大的好处就是速度快，它节省了一次指针定位的时间开销。</strong></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/03/JUC%E5%85%B6%E4%BB%96%E7%BB%84%E4%BB%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1233,135 +1393,6 @@ public static void main(String[] args) {
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/01/J2EE%E5%9F%BA%E7%A1%80/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="wingkywingky">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sagittarius">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/11/01/J2EE%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">J2EE基础</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-11-01 14:25:34 / 修改时间：15:42:05" itemprop="dateCreated datePublished" datetime="2019-11-01T14:25:34+08:00">2019-11-01</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">JAVA基础</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="Servlet的生命周期"><a href="#Servlet的生命周期" class="headerlink" title="Servlet的生命周期"></a>Servlet的生命周期</h3><p>Servlet接口定义了5个方法，其中<strong>前三个方法与Servlet生命周期相关</strong>：</p>
-<ul>
-<li><code>void init(ServletConfig config) throws ServletException</code></li>
-<li><code>void service(ServletRequest req, ServletResponse resp) throws ServletException, java.io.IOException</code></li>
-<li><code>void destroy()</code></li>
-<li><code>java.lang.String getServletInfo()</code></li>
-<li><code>ServletConfig getServletConfig()</code></li>
-</ul>
-<p><strong>生命周期：</strong> </p>
-<ol>
-<li><p><strong>Web容器加载Servlet并将其实例化后，Servlet生命周期开始</strong>，容器运行其<strong>init()方法</strong>进行Servlet的初始化；</p>
-</li>
-<li><p>请求到达时调用Servlet的<strong>service()方法</strong>，service()方法会根据需要调用与请求对应的<strong>doGet或doPost</strong>等方法；</p>
-</li>
-<li><p>当服务器关闭或项目被卸载时服务器会将Servlet实例销毁，此时会调用Servlet的<strong>destroy()方法</strong>。</p>
-</li>
-<li><p><strong>init方法和destroy方法只会执行一次，service方法客户端每次请求Servlet都会执行</strong>。Servlet中有时会用到一些需要初始化与销毁的资源，因此可以把初始化资源的代码放入init方法中，销毁资源的代码放入destroy方法中，这样就不需要每次处理客户端的请求都要初始化与销毁资源。</p>
-</li>
-</ol>
-<h3 id="get请求与post请求的区别"><a href="#get请求与post请求的区别" class="headerlink" title="get请求与post请求的区别"></a>get请求与post请求的区别</h3><p><img src="https://img-blog.csdnimg.cn/201812120851487.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl8zODAwODEwMA==,size_16,color_FFFFFF,t_70" alt="img"></p>
-<p><strong>GET 方法参数写法是固定的吗？</strong></p>
-<p>在约定中，我们的参数是写在 ? 后面，用 &amp; 分割。</p>
-<p>我们知道，解析报文的过程是通过获取 TCP 数据，用正则等工具从数据中获取 Header 和 Body，从而提取参数。</p>
-<p>比如header请求头中添加token，来验证用户是否登录等权限问题。</p>
-<p>也就是说，我们可以自己约定参数的写法，只要服务端能够解释出来就行，万变不离其宗。</p>
-<p><strong>GET 方法的长度限制是怎么回事？</strong></p>
-<p>网络上都会提到浏览器地址栏输入的参数是有限的。</p>
-<p>首先说明一点，HTTP 协议没有 Body 和 URL 的长度限制，对 URL 限制的大多是浏览器和服务器的原因。</p>
-<p>浏览器原因就不说了，服务器是因为处理长 URL 要消耗比较多的资源，为了性能和安全（防止恶意构造长 URL 来攻击）考虑，会给 URL 长度加限制。</p>
-<p><strong>POST 方法比 GET 方法安全？</strong></p>
-<p>有人说POST 比 GET 安全，因为数据在地址栏上不可见。</p>
-<p>然而，从传输的角度来说，他们都是不安全的，因为 HTTP 在网络上是明文传输的，只要在网络节点上捉包，就能完整地获取数据报文。</p>
-<p>要想安全传输，就只有加密，也就是 HTTPS。</p>
-<p><strong>POST 方法会产生两个 TCP 数据包？</strong></p>
-<p>有些文章中提到，post 会将 header 和 body 分开发送，先发送 header，服务端返回 100 状态码再发送 body。</p>
-<p>HTTP 协议中没有明确说明 POST 会产生两个 TCP 数据包，而且实际测试(Chrome)发现，header 和 body 不会分开发送。</p>
-<p>所以，header 和 body 分开发送是部分浏览器或框架的请求方法，不属于 post 必然行为。</p>
-<h3 id="转发（Forward）与重定向（Redirect）的区别"><a href="#转发（Forward）与重定向（Redirect）的区别" class="headerlink" title="转发（Forward）与重定向（Redirect）的区别"></a>转发<strong>（Forward）</strong>与重定向<strong>（Redirect）</strong>的区别</h3><p><strong>转发是服务器行为，重定向是客户端行为。</strong></p>
-<p><strong>转发（Forward）</strong> 通过RequestDispatcher对象的forward（HttpServletRequest  request,HttpServletResponse  response）方法实现的。RequestDispatcher可以通过HttpServletRequest  的getRequestDispatcher()方法获得。例如下面的代码就是跳转到login_success.jsp页面。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">request.getRequestDispatcher(<span class="string">"login_success.jsp"</span>).forward(request, response);</span><br></pre></td></tr></table></figure>
-
-<p><strong>重定向（Redirect）</strong>  是利用服务器返回的状态码来实现的。客户端浏览器请求服务器的时候，服务器会返回一个状态码。服务器通过 <code>HttpServletResponse</code> 的 <code>setStatus(int status)</code> 方法设置状态码。如果服务器返回301或者302，则浏览器会到新的网址重新请求该资源。</p>
-<ol>
-<li><p><strong>从地址栏显示来说</strong></p>
-<p>forward是服务器请求资源,服务器直接访问目标地址的URL,把那个URL的响应内容读取过来,然后把这些内容再发给浏览器.浏览器根本不知道服务器发送的内容从哪里来的,所以它的地址栏还是原来的地址. redirect是服务端根据逻辑,发送一个状态码,告诉浏览器重新去请求那个地址.所以地址栏显示的是新的URL.</p>
-</li>
-<li><p><strong>从数据共享来说</strong></p>
-<p>forward:转发页面和转发到的页面可以共享request里面的数据. redirect:不能共享数据.</p>
-</li>
-<li><p><strong>从运用地方来说</strong></p>
-<p>forward:一般用于用户登陆的时候,根据角色转发到相应的模块. redirect:一般用于用户注销登陆时返回主页面和跳转到其它的网站等</p>
-</li>
-<li><p><strong>从效率来说</strong></p>
-<p>forward:高. redirect:低.</p>
-</li>
-</ol>
-<h3 id="Cookie和Session的区别"><a href="#Cookie和Session的区别" class="headerlink" title="Cookie和Session的区别"></a><strong>Cookie和Session的区别</strong></h3><p>Cookie 和 Session都是用来跟踪浏览器用户身份的会话方式，但是两者的应用场景不太一样。</p>
-<p> <strong>Cookie 一般用来保存用户信息</strong>  比如①我们在 Cookie  中保存已经登录过得用户信息，下次访问网站的时候页面可以自动帮你登录的一些基本信息给填了；②一般的网站都会有保持登录也就是说下次你再访问网站的时候就不需要重新登录了，这是因为用户登录的时候我们可以存放了一个  Token 在 Cookie 中，下次登录的时候只需要根据 Token 值来查找用户即可(为了安全考虑，重新登录一般要将 Token  重写)；③登录一次网站后访问网站其他页面不需要重新登录。<strong>Session 的主要作用就是通过服务端记录用户的状态。</strong> 典型的场景是购物车，当你要添加商品到购物车的时候，系统不知道是哪个用户操作的，因为 HTTP 协议是无状态的。服务端给特定的用户创建特定的 Session 之后就可以标识这个用户并且跟踪这个用户了。</p>
-<p>Cookie 数据保存在客户端(浏览器端)，Session 数据保存在服务器端。</p>
-<p>Cookie 存储在客户端中，而Session存储在服务器上，相对来说 Session 安全性更高。如果使用 Cookie 的一些敏感信息不要写入 Cookie 中，最好能将 Cookie 信息加密然后使用到的时候再去服务器端解密。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1412,20 +1443,20 @@ public static void main(String[] args) {
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
