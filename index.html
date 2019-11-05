@@ -180,6 +180,136 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/05/%E4%BC%98%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wingkywingky">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sagittarius">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/05/%E4%BC%98%E5%8C%96/" class="post-title-link" itemprop="url">优化</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-05 15:32:37 / 修改时间：15:43:29" itemprop="dateCreated datePublished" datetime="2019-11-05T15:32:37+08:00">2019-11-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="优化方案"><a href="#优化方案" class="headerlink" title="优化方案"></a>优化方案</h3><h4 id="定位慢SQL，并优化"><a href="#定位慢SQL，并优化" class="headerlink" title="定位慢SQL，并优化"></a>定位慢SQL，并优化</h4><p>这是最常用、每一个技术人员都应该掌握基本的SQL调优手段（包括方法、工具、辅助系统等）。这里以MySQL为例，最常见的方式是，由自带的慢查询日志或者开源的慢查询系统定位到具体的出问题的SQL，然后使用explain、profile等工具来逐步调优，最后经过测试达到效果后上线。</p>
+<h4 id="合理使用索引"><a href="#合理使用索引" class="headerlink" title="合理使用索引"></a>合理使用索引</h4><h4 id="分表"><a href="#分表" class="headerlink" title="分表"></a>分表</h4><h4 id="读写分离"><a href="#读写分离" class="headerlink" title="读写分离"></a>读写分离</h4><p>当一台服务器不能满足需求时，采用读写分离【写: update/delete/add】的方式进行集群。<br>一台数据库支持最大连接数是有限的，如果用户的并发访问很多，一台服务器无法满足需求，可以集群处理。mysql集群处理技术最常用的就是读写分离。</p>
+<p>主从同步：数据库最终会把数据持久化到磁盘，集群必须确保每个数据库服务器的数据是一致的。从库读主库写，从库从主库上同步数据。<br>读写分离：使用负载均衡实现，写操作都往主库上写，读操作往从服务器上读。</p>
+<h4 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h4><h3 id="查询性能优化"><a href="#查询性能优化" class="headerlink" title="查询性能优化"></a>查询性能优化</h3><h4 id="使用-Explain-进行分析"><a href="#使用-Explain-进行分析" class="headerlink" title="使用 Explain 进行分析"></a><strong>使用 Explain 进行分析</strong></h4><p>Explain 用来分析 SELECT 查询语句，开发人员可以通过分析 Explain 结果来优化查询语句。</p>
+<p>比较重要的字段有：</p>
+<ul>
+<li>select_type : 查询类型，有简单查询、联合查询、子查询等</li>
+<li>key : 使用的索引</li>
+<li>rows : 扫描的行数</li>
+</ul>
+<h4 id="优化数据访问"><a href="#优化数据访问" class="headerlink" title="优化数据访问"></a><strong>优化数据访问</strong></h4><h5 id="1-减少请求的数据量"><a href="#1-减少请求的数据量" class="headerlink" title="1. 减少请求的数据量"></a>1. 减少请求的数据量</h5><ul>
+<li>只返回必要的列：最好不要使用 SELECT * 语句。</li>
+<li>只返回必要的行：使用 LIMIT 语句来限制返回的数据。</li>
+<li>缓存重复查询的数据：使用缓存可以避免在数据库中进行查询，特别在要查询的数据经常被重复查询时，缓存带来的查询性能提升将会是非常明显的。</li>
+</ul>
+<h5 id="2-减少服务器端扫描的行数"><a href="#2-减少服务器端扫描的行数" class="headerlink" title="2. 减少服务器端扫描的行数"></a>2. 减少服务器端扫描的行数</h5><p>最有效的方式是使用索引来覆盖查询。</p>
+<h4 id="重构查询方式"><a href="#重构查询方式" class="headerlink" title="重构查询方式"></a>重构查询方式</h4><h5 id="1-切分大查询"><a href="#1-切分大查询" class="headerlink" title="1. 切分大查询"></a>1. 切分大查询</h5><p>一个大查询如果一次性执行的话，可能一次锁住很多数据、占满整个事务日志、耗尽系统资源、阻塞很多小的但重要的查询。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> messages <span class="keyword">WHERE</span> <span class="keyword">create</span> &lt; <span class="keyword">DATE_SUB</span>(<span class="keyword">NOW</span>(), <span class="built_in">INTERVAL</span> <span class="number">3</span> <span class="keyword">MONTH</span>);</span><br><span class="line">rows_affected = 0</span><br><span class="line"><span class="keyword">do</span> &#123;</span><br><span class="line">    rows_affected = do_query(</span><br><span class="line">    <span class="string">"DELETE FROM messages WHERE create  &lt; DATE_SUB(NOW(), INTERVAL 3 MONTH) LIMIT 10000"</span>)</span><br><span class="line">&#125; <span class="keyword">while</span> rows_affected &gt; <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="2-分解大连接查询"><a href="#2-分解大连接查询" class="headerlink" title="2. 分解大连接查询"></a>2. 分解大连接查询</h5><p>将一个大连接查询分解成对每一个表进行一次单表查询，然后在应用程序中进行关联，这样做的好处有：</p>
+<ul>
+<li>让缓存更高效。对于连接查询，如果其中一个表发生变化，那么整个查询缓存就无法使用。而分解后的多个查询，即使其中一个表发生变化，对其它表的查询缓存依然可以使用。</li>
+<li>分解成多个单表查询，这些单表查询的缓存结果更可能被其它查询使用到，从而减少冗余记录的查询。</li>
+<li>减少锁竞争；</li>
+<li>在应用层进行连接，可以更容易对数据库进行拆分，从而更容易做到高性能和可伸缩。</li>
+<li>查询本身效率也可能会有所提升。例如下面的例子中，使用 IN() 代替连接查询，可以让 MySQL 按照 ID 顺序进行查询，这可能比随机的连接要更高效。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tag</span><br><span class="line"><span class="keyword">JOIN</span> tag_post <span class="keyword">ON</span> tag_post.tag_id=tag.id</span><br><span class="line"><span class="keyword">JOIN</span> post <span class="keyword">ON</span> tag_post.post_id=post.id</span><br><span class="line"><span class="keyword">WHERE</span> tag.tag=<span class="string">'mysql'</span>;</span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tag <span class="keyword">WHERE</span> tag=<span class="string">'mysql'</span>;</span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tag_post <span class="keyword">WHERE</span> tag_id=<span class="number">1234</span>;</span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> post <span class="keyword">WHERE</span> post.id <span class="keyword">IN</span> (<span class="number">123</span>,<span class="number">456</span>,<span class="number">567</span>,<span class="number">9098</span>,<span class="number">8904</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="分表优化"><a href="#分表优化" class="headerlink" title="分表优化"></a>分表优化</h3><h4 id="水平切分"><a href="#水平切分" class="headerlink" title="水平切分"></a>水平切分</h4><p>水平切分又称为 Sharding，它是将同一个表中的记录拆分到多个结构相同的表中。</p>
+<p>当一个表的数据不断增多时，Sharding 是必然的选择，它可以将数据分布到集群的不同节点上，从而缓存单个数据库的压力。</p>
+<p> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/63c2909f-0c5f-496f-9fe5-ee9176b31aba.jpg" alt="img"> </p>
+<h4 id="垂直切分"><a href="#垂直切分" class="headerlink" title="垂直切分"></a>垂直切分</h4><p>垂直切分是将一张表按列切分成多个表，通常是按照列的关系密集程度进行切分，也可以利用垂直切分将经常被使用的列和不经常被使用的列切分到不同的表中。</p>
+<p>在数据库的层面使用垂直切分将按数据库中表的密集程度部署到不同的库中，例如将原来的电商数据库垂直切分成商品数据库、用户数据库等。</p>
+<p> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/e130e5b8-b19a-4f1e-b860-223040525cf6.jpg" alt="img"> </p>
+<h4 id="Sharding-策略"><a href="#Sharding-策略" class="headerlink" title="Sharding 策略"></a>Sharding 策略</h4><ul>
+<li>哈希取模：hash(key) % N；</li>
+<li>范围：可以是 ID 范围也可以是时间范围；</li>
+<li>映射表：使用单独的一个数据库来存储映射关系。</li>
+</ul>
+<h4 id="Sharding-存在的问题"><a href="#Sharding-存在的问题" class="headerlink" title="Sharding 存在的问题"></a>Sharding 存在的问题</h4><p><strong>1. 事务问题</strong></p>
+<p>使用分布式事务来解决，比如 XA 接口。</p>
+<p><strong>2. 连接</strong></p>
+<p>可以将原来的连接分解成多个单表查询，然后在用户程序中进行连接。</p>
+<ol start="3">
+<li><strong>ID 唯一性</strong></li>
+</ol>
+<ul>
+<li>使用全局唯一 ID（GUID）</li>
+<li>为每个分片指定一个 ID 范围</li>
+<li>分布式 ID 生成器 (如 Twitter 的 Snowflake 算法)</li>
+</ul>
+<h3 id="读写分离-1"><a href="#读写分离-1" class="headerlink" title="读写分离"></a>读写分离</h3><p>主服务器处理写操作以及实时性要求比较高的读操作，而从服务器处理读操作。</p>
+<p>读写分离能提高性能的原因在于：</p>
+<ul>
+<li>主从服务器负责各自的读和写，极大程度缓解了锁的争用；</li>
+<li>从服务器可以使用 MyISAM，提升查询性能以及节约系统开销；</li>
+<li>增加冗余，提高可用性。</li>
+</ul>
+<p>读写分离常用代理方式来实现，代理服务器接收应用层传来的读写请求，然后决定转发到哪个服务器。</p>
+<p> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/master-slave-proxy.png" alt="img"> </p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/05/%E7%B4%A2%E5%BC%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1570,114 +1700,11 @@ Mysql中锁定 粒度最小 的一种锁，只针对当前操作的行进行加�
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/03/%E5%85%B6%E4%BB%96%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="wingkywingky">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sagittarius">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/11/03/%E5%85%B6%E4%BB%96%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8/" class="post-title-link" itemprop="url">其他并发容器</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-11-03 15:25:52 / 修改时间：15:33:45" itemprop="dateCreated datePublished" datetime="2019-11-03T15:25:52+08:00">2019-11-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index">
-                    <span itemprop="name">JAVA多线程</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="CopyOnWriteArrayList"><a href="#CopyOnWriteArrayList" class="headerlink" title="CopyOnWriteArrayList"></a>CopyOnWriteArrayList</h3><h4 id="CopyOnWriteArrayList简介"><a href="#CopyOnWriteArrayList简介" class="headerlink" title="CopyOnWriteArrayList简介"></a>CopyOnWriteArrayList简介</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CopyOnWriteArrayList</span>&lt;<span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class"><span class="keyword">extends</span> <span class="title">Object</span></span></span><br><span class="line"><span class="class"><span class="keyword">implements</span> <span class="title">List</span>&lt;<span class="title">E</span>&gt;, <span class="title">RandomAccess</span>, <span class="title">Cloneable</span>, <span class="title">Serializable</span></span></span><br></pre></td></tr></table></figure>
-
-<p>在很多应用场景中，读操作可能会远远大于写操作。由于读操作根本不会修改原有的数据，因此对于每次读取都进行加锁其实是一种资源浪费。我们应该允许多个线程同时访问List的内部数据，毕竟读取操作是安全的。</p>
-<p>这和我们之前在多线程章节讲过 <code>ReentrantReadWriteLock</code> 读写锁的思想非常类似，也就是读读共享、写写互斥、读写互斥、写读互斥。JDK中提供了 <code>CopyOnWriteArrayList</code> 类比相比于在读写锁的思想又更进一步。为了将读取的性能发挥到极致，<code>CopyOnWriteArrayList</code> 读取是完全不用加锁的，并且更厉害的是：写入也不会阻塞读取操作。只有写入和写入之间需要进行同步等待。这样一来，读操作的性能就会大幅度提升。<strong>那它是怎么做的呢？</strong></p>
-<h4 id="CopyOnWriteArrayList实现"><a href="#CopyOnWriteArrayList实现" class="headerlink" title="CopyOnWriteArrayList实现"></a>CopyOnWriteArrayList实现</h4><p> <code>CopyOnWriteArrayList</code>  类的所有可变操作（add，set等等）都是通过创建底层数组的新副本来实现的。当 List  需要被修改的时候，我并不修改原有内容，而是对原有数据进行一次复制，将修改的内容写入副本。写完之后，再将修改完的副本替换原来的数据，这样就可以保证写操作不会影响读操作了。</p>
-<p>从 <code>CopyOnWriteArrayList</code> 的名字就能看出<code>CopyOnWriteArrayList</code> 是满足<code>CopyOnWrite</code> 的ArrayList，所谓<code>CopyOnWrite</code> 也就是说：在计算机，如果你想要对一块内存进行修改时，我们不在原有内存块中进行写操作，而是将内存拷贝一份，在新的内存中进行写操作，写完之后呢，就将指向原来内存指针指向新的内存，原来的内存就可以被回收掉了。</p>
-<h3 id="ConcurrentLinkedQueue（非阻塞队列）"><a href="#ConcurrentLinkedQueue（非阻塞队列）" class="headerlink" title="ConcurrentLinkedQueue（非阻塞队列）"></a>ConcurrentLinkedQueue（非阻塞队列）</h3><p>Java提供的线程安全的 Queue 可以分为<strong>阻塞队列</strong>和<strong>非阻塞队列</strong>，其中阻塞队列的典型例子是 BlockingQueue，非阻塞队列的典型例子是ConcurrentLinkedQueue，在实际应用中要根据实际需要选用阻塞队列或者非阻塞队列。 <strong>阻塞队列可以通过加锁来实现，非阻塞队列可以通过 CAS 操作实现。</strong></p>
-<p>从名字可以看出，<code>ConcurrentLinkedQueue</code>这个队列使用链表作为其数据结构．ConcurrentLinkedQueue 应该算是在高并发环境中性能最好的队列了。它之所有能有很好的性能，是因为其内部复杂的实现。</p>
-<p>ConcurrentLinkedQueue 内部代码我们就不分析了，大家知道ConcurrentLinkedQueue 主要使用 CAS 非阻塞算法来实现线程安全就好了。</p>
-<p>ConcurrentLinkedQueue 适合在对性能要求相对较高，同时对队列的读写存在多个线程同时进行的场景，即如果对队列加锁的成本较高则适合使用无锁的ConcurrentLinkedQueue来替代。</p>
-<h3 id="BlockingQueue（阻塞队列）"><a href="#BlockingQueue（阻塞队列）" class="headerlink" title="BlockingQueue（阻塞队列）"></a>BlockingQueue（阻塞队列）</h3><p>上面我们己经提到了 ConcurrentLinkedQueue  作为高性能的非阻塞队列。下面我们要讲到的是阻塞队列——BlockingQueue。阻塞队列（BlockingQueue）被广泛使用在“生产者-消费者”问题中，其原因是BlockingQueue提供了可阻塞的插入和移除的方法。当队列容器已满，生产者线程会被阻塞，直到队列未满；当队列容器为空时，消费者线程会被阻塞，直至队列非空时为止。</p>
-<p>BlockingQueue 是一个接口，继承自 Queue，所以其实现类也可以作为 Queue 的实现来使用，而 Queue 又继承自 Collection 接口。下面是 BlockingQueue 的相关实现类：</p>
-<p><img src="http://my-blog-to-use.oss-cn-beijing.aliyuncs.com/18-12-9/51622268.jpg" alt="BlockingQueue 的实现类"></p>
-<p><strong>下面主要介绍一下:ArrayBlockingQueue、LinkedBlockingQueue、PriorityBlockingQueue，这三个 BlockingQueue 的实现类。</strong></p>
-<p><strong>ArrayBlockingQueue</strong></p>
-<p><strong>ArrayBlockingQueue</strong> 是 BlockingQueue 接口的有界队列实现类，底层采用<strong>数组</strong>来实现。ArrayBlockingQueue一旦创建，容量不能改变。其并发控制采用可重入锁来控制，不管是插入操作还是读取操作，都需要获取到锁才能进行操作。当队列容量满时，尝试将元素放入队列将导致操作阻塞;尝试从一个空队列中取一个元素也会同样阻塞。</p>
-<p>ArrayBlockingQueue  默认情况下不能保证线程访问队列的公平性，所谓公平性是指严格按照线程等待的绝对时间顺序，即最先等待的线程能够最先访问到  ArrayBlockingQueue。而非公平性则是指访问 ArrayBlockingQueue 的顺序不是遵守严格的时间顺序，有可能存在，当  ArrayBlockingQueue 可以被访问时，长时间阻塞的线程依然无法访问到  ArrayBlockingQueue。如果保证公平性，通常会降低吞吐量。如果需要获得公平性的  ArrayBlockingQueue，可采用如下代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> ArrayBlockingQueue&lt;Integer&gt; blockingQueue = <span class="keyword">new</span> ArrayBlockingQueue&lt;Integer&gt;(<span class="number">10</span>,tr</span><br></pre></td></tr></table></figure>
-
-<p><strong>LinkedBlockingQueue</strong></p>
-<p><strong>LinkedBlockingQueue</strong> 底层基于<strong>单向链表</strong>实现的阻塞队列，可以当做无界队列也可以当做有界队列来使用，同样满足FIFO的特性，与ArrayBlockingQueue<br>相比起来具有更高的吞吐量，为了防止 LinkedBlockingQueue<br>容量迅速增，损耗大量内存。通常在创建LinkedBlockingQueue<br>对象时，会指定其大小，如果未指定，容量等于Integer.MAX_VALUE。</p>
-<p><strong>PriorityBlockingQueue</strong> </p>
-<p><strong>PriorityBlockingQueue</strong> 是一个支持优先级的无界阻塞队列。默认情况下元素采用自然顺序进行排序，也可以通过自定义类实现 <code>compareTo()</code> 方法来指定元素排序规则，或者初始化时通过构造器参数 <code>Comparator</code> 来指定排序规则。</p>
-<p>PriorityBlockingQueue 并发控制采用的是 <strong>ReentrantLock</strong>，队列为无界队列（ArrayBlockingQueue  是有界队列，LinkedBlockingQueue 也可以通过在构造函数中传入 capacity 指定队列最大的容量，但是  PriorityBlockingQueue 只能指定初始的队列大小，后面插入元素的时候，<strong>如果空间不够的话会自动扩容</strong>）。</p>
-<p>简单地说，它就是  PriorityQueue 的线程安全版本。不可以插入 null 值，同时，插入队列的对象必须是可比较大小的（comparable），否则报  ClassCastException 异常。它的插入操作 put 方法不会 block，因为它是无界队列（take  方法在队列为空的时候会阻塞）。</p>
-<h3 id="ConcurrentSkipListMap"><a href="#ConcurrentSkipListMap" class="headerlink" title="ConcurrentSkipListMap"></a><strong>ConcurrentSkipListMap</strong></h3><p>对于一个单链表，即使链表是有序的，如果我们想要在其中查找某个数据，也只能从头到尾遍历链表，这样效率自然就会很低，跳表就不一样了。跳表是一种可以用来快速查找的数据结构，有点类似于平衡树。它们都可以对元素进行快速的查找。但一个重要的区别是：对平衡树的插入和删除往往很可能导致平衡树进行一次全局的调整。而对跳表的插入和删除只需要对整个数据结构的局部进行操作即可。这样带来的好处是：在高并发的情况下，你会需要一个全局锁来保证整个平衡树的线程安全。而对于跳表，你只需要部分锁即可。这样，在高并发环境下，你就可以拥有更好的性能。而就查询的性能而言，跳表的时间复杂度也是  <strong>O(logn)</strong> 所以在并发数据结构中，JDK 使用跳表来实现一个 Map。</p>
-<p>跳表的本质是同时维护了多个链表，并且链表是分层的，</p>
-<p><img src="http://my-blog-to-use.oss-cn-beijing.aliyuncs.com/18-12-9/93666217.jpg" alt="2级索引跳表"></p>
-<p>最低层的链表维护了跳表内所有的元素，每上面一层链表都是下面一层的子集。</p>
-<p>跳表内的所有链表的元素都是排序的。查找时，可以从顶级链表开始找。一旦发现被查找的元素大于当前链表中的取值，就会转入下一层链表继续找。这也就是说在查找过程中，搜索是跳跃式的。如上图所示，在跳表中查找元素18。</p>
-<p><img src="http://my-blog-to-use.oss-cn-beijing.aliyuncs.com/18-12-9/32005738.jpg" alt="在跳表中查找元素18"></p>
-<p>查找18 的时候原来需要遍历 18 次，现在只需要 7 次即可。针对链表长度比较大的时候，构建索引查找效率的提升就会非常明显。</p>
-<p>从上面很容易看出，<strong>跳表是一种利用空间换时间的算法。</strong></p>
-<p>使用跳表实现Map   和使用哈希算法实现Map的另外一个不同之处是：哈希并不会保存元素的顺序，而跳表内所有的元素都是排序的。因此在对跳表进行遍历时，你会得到一个有序的结果。所以，如果你的应用需要有序性，那么跳表就是你不二的选择。JDK  中实现这一数据结构的类是ConcurrentSkipListMap。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1723,7 +1750,7 @@ Mysql中锁定 粒度最小 的一种锁，只针对当前操作的行进行加�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-count">31</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
