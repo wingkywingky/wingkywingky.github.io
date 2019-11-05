@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.4.2',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="悲观锁与乐观锁数据的锁定分为两种，第一种叫作悲观锁，第二种叫作乐观锁。 1、悲观锁，就是对数据的冲突采取一种悲观的态度，也就是说假设数据肯定会冲突，所以在数据开始读取的时候就把数据锁定住。【数据锁定：数据将暂时不会得到修改】 2、乐观锁，认为数据一般情况下不会造成冲突，所以在数据进行提交更新的时候，才会正式对数据的冲突与否进行检测，如果发现冲突了，则让用户返回错误的信息。让用户决定如何去做。 理解">
+<meta name="keywords" content="MySQL,数据库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="锁机制">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;11&#x2F;05&#x2F;%E9%94%81%E6%9C%BA%E5%88%B6&#x2F;index.html">
+<meta property="og:site_name" content="Sagittarius">
+<meta property="og:description" content="悲观锁与乐观锁数据的锁定分为两种，第一种叫作悲观锁，第二种叫作乐观锁。 1、悲观锁，就是对数据的冲突采取一种悲观的态度，也就是说假设数据肯定会冲突，所以在数据开始读取的时候就把数据锁定住。【数据锁定：数据将暂时不会得到修改】 2、乐观锁，认为数据一般情况下不会造成冲突，所以在数据进行提交更新的时候，才会正式对数据的冲突与否进行检测，如果发现冲突了，则让用户返回错误的信息。让用户决定如何去做。 理解">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https:&#x2F;&#x2F;cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com&#x2F;e41405a8-7c05-4f70-8092-e961e28d3112.jpg">
+<meta property="og:updated_time" content="2019-11-05T02:33:52.208Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com&#x2F;e41405a8-7c05-4f70-8092-e961e28d3112.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2019/11/05/%E9%94%81%E6%9C%BA%E5%88%B6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>锁机制 | Sagittarius</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sagittarius</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/05/%E9%94%81%E6%9C%BA%E5%88%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wingkywingky">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sagittarius">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          锁机制
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-05 10:21:39 / 修改时间：10:33:52" itemprop="dateCreated datePublished" datetime="2019-11-05T10:21:39+08:00">2019-11-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="悲观锁与乐观锁"><a href="#悲观锁与乐观锁" class="headerlink" title="悲观锁与乐观锁"></a>悲观锁与乐观锁</h3><p>数据的锁定分为两种，第一种叫作悲观锁，第二种叫作乐观锁。</p>
+<p>1、悲观锁，就是对数据的冲突采取一种悲观的态度，也就是说假设数据肯定会冲突，所以在数据开始读取的时候就把数据锁定住。【数据锁定：数据将暂时不会得到修改】</p>
+<p>2、乐观锁，认为数据一般情况下不会造成冲突，所以在数据进行提交更新的时候，才会正式对数据的冲突与否进行检测，如果发现冲突了，则让用户返回错误的信息。让用户决定如何去做。</p>
+<h4 id="理解"><a href="#理解" class="headerlink" title="理解"></a><strong>理解</strong></h4><ol>
+<li>乐观锁是一种思想，具体实现是，表中有一个版本字段，第一次读的时候，获取到这个字段。处理完业务逻辑开始更新的时候，需要再次查看该字段的值是否和第一次的一样。如果一样更新，反之拒绝。</li>
+</ol>
+<p>之所以叫乐观，因为这个模式没有从数据库加锁。</p>
+<ol start="2">
+<li>悲观锁是读取的时候为后面的更新加锁，之后再来的读操作都会等待。这种是数据库锁</li>
+</ol>
+<p>乐观锁优点程序实现，不会存在死锁等问题。他的适用场景也相对乐观。阻止不了除了程序之外的数据库操作。</p>
+<p>悲观锁是数据库实现，他阻止一切数据库操作。</p>
+<h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a><strong>实现</strong></h4><p>一、悲观锁<br>    1、排它锁，当事务在操作数据时把这部分数据进行锁定，直到操作完毕后再解锁，其他事务操作才可操作该部分数据。这将防止其他进程读取或修改表中的数据。</p>
+<pre><code>2、实现：大多数情况下依靠数据库的锁机制实现
+
+ 一般使用 select ...for update 对所选择的数据进行加锁处理，例如select * from account where name=”Max” for update， 这条sql 语句锁定了account 表中所有符合检索条件（name=”Max”）的记录。本次事务提交之前（事务提交时会释放事务过程中的锁），外界无法修改这些记录。</code></pre><p>二、乐观锁<br>    1、如果有人在你之前更新了，你的更新应当是被拒绝的，可以让用户重新操作。</p>
+<pre><code>2、实现：大多数基于数据版本（Version）记录机制实现
+
+ 具体可通过给表加一个版本号或时间戳字段实现，当读取数据时，将version字段的值一同读出，数据每更新一次，对此version值加一。当我们提交更新的时候，判断当前版本信息与第一次取出来的版本值大小，如果数据库表当前版本号与第一次取出来的version值相等，则予以更新，否则认为是过期数据，拒绝更新，让用户重新操作。</code></pre><h3 id="表级锁和行级锁"><a href="#表级锁和行级锁" class="headerlink" title="表级锁和行级锁"></a>表级锁和行级锁</h3><p>Mysql为了解决并发、数据安全的问题，使用了锁机制。</p>
+<p>可以按照锁的粒度把数据库锁分为表级锁和行级锁。</p>
+<pre><code>表级锁
+
+Mysql中锁定 粒度最大 的一种锁，对当前操作的整张表加锁，实现简单 ，资源消耗也比较少，加锁快，不会出现死锁 。其锁定粒度最大，触发锁冲突的概率最高，并发度最低，MyISAM和 InnoDB引擎都支持表级锁。
+
+行级锁
+
+Mysql中锁定 粒度最小 的一种锁，只针对当前操作的行进行加锁。 行级锁能大大减少数据库操作的冲突。其加锁粒度最小，并发度高，但加锁的开销也最大，加锁慢，会出现死锁。 InnoDB支持的行级锁，包括如下几种。
+    Record Lock: 对索引项加锁，锁定符合条件的行。其他事务不能修改和删除加锁项；
+    Gap Lock: 对索引项之间的“间隙”加锁，锁定记录的范围（对第一条记录前的间隙或最后一条将记录后的间隙加锁），不包含索引项本身。其他事务不能在锁范围内插入数据，这样就防止了别的事务新增幻影行。
+    Next-key Lock： 锁定索引项本身和索引范围。即Record Lock和Gap Lock的结合。可解决幻读问题。</code></pre><p>虽然使用行级索具有粒度小、并发度高等特点，但是表级锁有时候也是非常必要的：</p>
+<pre><code>事务更新大表中的大部分数据直接使用表级锁效率更高；
+事务比较复杂，使用行级索很可能引起死锁导致回滚。</code></pre><p><strong>可以用以下方式避免死锁</strong></p>
+<ul>
+<li><strong>通过表级锁来减少死锁产生的概率；</strong></li>
+<li><strong>多个程序尽量约定以相同的顺序访问表（这也是解决并发理论中哲学家就餐问题的一种思路）；</strong></li>
+<li><strong>同一个事务尽可能做到一次锁定所需要的所有资源。</strong></li>
+</ul>
+<p><strong>表级锁和行级锁对比：</strong></p>
+<ul>
+<li><strong>表级锁：</strong> MySQL中锁定 <strong>粒度最大</strong> 的一种锁，对当前操作的整张表加锁，实现简单，资源消耗也比较少，加锁快，不会出现死锁。其锁定粒度最大，触发锁冲突的概率最高，并发度最低，MyISAM和 InnoDB引擎都支持表级锁。</li>
+<li><strong>行级锁：</strong> MySQL中锁定 <strong>粒度最小</strong> 的一种锁，只针对当前操作的行进行加锁。 行级锁能大大减少数据库操作的冲突。其加锁粒度最小，并发度高，但加锁的开销也最大，加锁慢，会出现死锁。 </li>
+</ul>
+<h3 id="多版本并发控制"><a href="#多版本并发控制" class="headerlink" title="多版本并发控制"></a>多版本并发控制</h3><p>多版本并发控制（Multi-Version Concurrency Control, MVCC）是 MySQL 的 InnoDB  存储引擎实现隔离级别的一种具体方式，用于实现提交读和可重复读这两种隔离级别。而未提交读隔离级别总是读取最新的数据行，无需使用  MVCC。可串行化隔离级别需要对所有读取的行都加锁，单纯使用 MVCC 无法实现。</p>
+<h4 id="版本号"><a href="#版本号" class="headerlink" title="版本号"></a>版本号</h4><ul>
+<li>系统版本号：是一个递增的数字，每开始一个新的事务，系统版本号就会自动递增。</li>
+<li>事务版本号：事务开始时的系统版本号。</li>
+</ul>
+<h4 id="隐藏的列"><a href="#隐藏的列" class="headerlink" title="隐藏的列"></a>隐藏的列</h4><p>MVCC 在每行记录后面都保存着两个隐藏的列，用来存储两个版本号：</p>
+<ul>
+<li>创建版本号：指示创建一个数据行的快照时的系统版本号；</li>
+<li>删除版本号：如果该快照的删除版本未定义或删除版本号大于当前事务版本号表示该快照有效</li>
+</ul>
+<h4 id="Undo-日志"><a href="#Undo-日志" class="headerlink" title="Undo 日志"></a>Undo 日志</h4><p>MVCC 使用到的快照存储在 Undo 日志中，该日志通过回滚指针把一个数据行（Record）的所有快照连接起来。</p>
+<p> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/e41405a8-7c05-4f70-8092-e961e28d3112.jpg" alt="img"> </p>
+<h4 id="实现过程"><a href="#实现过程" class="headerlink" title="实现过程"></a>实现过程</h4><p>以下实现过程针对可重复读隔离级别。</p>
+<p>当开始一个事务时，该事务的版本号肯定大于当前所有数据行快照的创建版本号，理解这一点很关键。数据行快照的创建版本号是创建数据行快照时的系统版本号，系统版本号随着创建事务而递增，因此新创建一个事务时，这个事务的系统版本号比之前的系统版本号都大，也就是比所有数据行快照的创建版本号都大。</p>
+<h5 id="1-SELECT"><a href="#1-SELECT" class="headerlink" title="1. SELECT"></a>1. SELECT</h5><p>多个事务必须读取到同一个数据行的快照，并且这个快照是距离现在最近的一个有效快照。但是也有例外，如果有一个事务正在修改该数据行，那么它可以读取事务本身所做的修改，而不用和其它事务的读取结果一致。</p>
+<p>把没有对一个数据行做修改的事务称为  T，T 所要读取的数据行快照的创建版本号必须小于等于 T 的版本号，因为如果大于 T  的版本号，那么表示该数据行快照是其它事务的最新修改，因此不能去读取它。除此之外，T 所要读取的数据行快照的删除版本号必须是未定义或者大于 T  的版本号，因为如果小于等于 T 的版本号，那么表示该数据行快照是已经被删除的，不应该去读取它。</p>
+<h5 id="2-INSERT"><a href="#2-INSERT" class="headerlink" title="2. INSERT"></a>2. INSERT</h5><p>将当前系统版本号作为数据行快照的创建版本号。</p>
+<h5 id="3-DELETE"><a href="#3-DELETE" class="headerlink" title="3. DELETE"></a>3. DELETE</h5><p>将当前系统版本号作为数据行快照的删除版本号。</p>
+<h5 id="4-UPDATE"><a href="#4-UPDATE" class="headerlink" title="4. UPDATE"></a>4. UPDATE</h5><p>将当前系统版本号作为更新前的数据行快照的删除版本号，并将当前系统版本号作为更新后的数据行快照的创建版本号。可以理解为先执行 DELETE 后执行 INSERT。</p>
+<h3 id="快照读与当前读"><a href="#快照读与当前读" class="headerlink" title="快照读与当前读"></a>快照读与当前读</h3><h4 id="1-快照读"><a href="#1-快照读" class="headerlink" title="1. 快照读"></a>1. 快照读</h4><p>使用 MVCC 读取的是快照中的数据，这样可以减少加锁所带来的开销。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">table</span> ...;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-当前读"><a href="#2-当前读" class="headerlink" title="2. 当前读"></a>2. 当前读</h4><p>读取的是最新的数据，需要加锁。以下第一个语句需要加 S 锁，其它都需要加 X 锁。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">table</span> <span class="keyword">where</span> ? <span class="keyword">lock</span> <span class="keyword">in</span> <span class="keyword">share</span> <span class="keyword">mode</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">table</span> <span class="keyword">where</span> ? <span class="keyword">for</span> <span class="keyword">update</span>;</span><br><span class="line"><span class="keyword">insert</span>;</span><br><span class="line"><span class="keyword">update</span>;</span><br><span class="line"><span class="keyword">delete</span>;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2019/11/04/%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E/" rel="next" title="存储引擎">
+                  <i class="fa fa-chevron-left"></i> 存储引擎
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#悲观锁与乐观锁"><span class="nav-number">1.</span> <span class="nav-text">悲观锁与乐观锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#理解"><span class="nav-number">1.1.</span> <span class="nav-text">理解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实现"><span class="nav-number">1.2.</span> <span class="nav-text">实现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#表级锁和行级锁"><span class="nav-number">2.</span> <span class="nav-text">表级锁和行级锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多版本并发控制"><span class="nav-number">3.</span> <span class="nav-text">多版本并发控制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#版本号"><span class="nav-number">3.1.</span> <span class="nav-text">版本号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#隐藏的列"><span class="nav-number">3.2.</span> <span class="nav-text">隐藏的列</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Undo-日志"><span class="nav-number">3.3.</span> <span class="nav-text">Undo 日志</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实现过程"><span class="nav-number">3.4.</span> <span class="nav-text">实现过程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-SELECT"><span class="nav-number">3.4.1.</span> <span class="nav-text">1. SELECT</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-INSERT"><span class="nav-number">3.4.2.</span> <span class="nav-text">2. INSERT</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-DELETE"><span class="nav-number">3.4.3.</span> <span class="nav-text">3. DELETE</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-UPDATE"><span class="nav-number">3.4.4.</span> <span class="nav-text">4. UPDATE</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#快照读与当前读"><span class="nav-number">4.</span> <span class="nav-text">快照读与当前读</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-快照读"><span class="nav-number">4.1.</span> <span class="nav-text">1. 快照读</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-当前读"><span class="nav-number">4.2.</span> <span class="nav-text">2. 当前读</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <img class="site-author-image" itemprop="image" alt="wingkywingky"
+    src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">wingkywingky</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wingkywingky</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.0.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.4.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
