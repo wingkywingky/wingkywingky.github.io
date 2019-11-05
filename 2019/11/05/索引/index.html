@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.4.2',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="B+ Tree 原理详解B+树  如上图，是一棵B+树。B+树的定义，童鞋可以自行百度，我们只说一些重点。图中浅蓝色的块，我们称之为一个磁盘，可以看到，每个磁盘块包含几个数据项（深蓝色）和指针（黄色）。如：磁盘块1包含数据17和数据35，包含指针P1,P2,P3，P1指向数据小于17的磁盘块，P2指向数据在17到35之间的数据所在磁盘块，P3指向数据大于35的数据所在的磁盘块。真实数据存在于叶子节">
+<meta name="keywords" content="MySQL,数据库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="索引">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;11&#x2F;05&#x2F;%E7%B4%A2%E5%BC%95&#x2F;index.html">
+<meta property="og:site_name" content="Sagittarius">
+<meta property="og:description" content="B+ Tree 原理详解B+树  如上图，是一棵B+树。B+树的定义，童鞋可以自行百度，我们只说一些重点。图中浅蓝色的块，我们称之为一个磁盘，可以看到，每个磁盘块包含几个数据项（深蓝色）和指针（黄色）。如：磁盘块1包含数据17和数据35，包含指针P1,P2,P3，P1指向数据小于17的磁盘块，P2指向数据在17到35之间的数据所在磁盘块，P3指向数据大于35的数据所在的磁盘块。真实数据存在于叶子节">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https:&#x2F;&#x2F;img-blog.csdn.net&#x2F;20160620140312586">
+<meta property="og:updated_time" content="2019-11-05T07:21:30.854Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;img-blog.csdn.net&#x2F;20160620140312586">
+
+<link rel="canonical" href="http://yoursite.com/2019/11/05/%E7%B4%A2%E5%BC%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>索引 | Sagittarius</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sagittarius</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/05/%E7%B4%A2%E5%BC%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wingkywingky">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sagittarius">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          索引
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-05 14:24:14 / 修改时间：15:21:30" itemprop="dateCreated datePublished" datetime="2019-11-05T14:24:14+08:00">2019-11-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="B-Tree-原理"><a href="#B-Tree-原理" class="headerlink" title="B+ Tree 原理"></a>B+ Tree 原理</h3><p>详解B+树</p>
+<p><img src="https://img-blog.csdn.net/20160620140312586" alt="img"></p>
+<p>如上图，是一棵B+树。B+树的定义，童鞋可以自行百度，我们只说一些重点。图中浅蓝色的块，我们称之为一个磁盘，可以看到，每个磁盘块包含几个数据项（深蓝色）和指针（黄色）。如：磁盘块1包含数据17和数据35，包含指针P1,P2,P3，P1指向数据小于17的磁盘块，P2指向数据在17到35之间的数据所在磁盘块，P3指向数据大于35的数据所在的磁盘块。真实数据存在于叶子节点，即3，5，9，10，13，15，28，29，36，60，75，79，90，99 。 非叶子节点不存储真实数据，只存储指引搜索方向的数据项，如17、35并不真实存在于数据表中。</p>
+<p><strong>B+树的查找过程</strong></p>
+<p>还是使用上面的B+树。假设，我们要查找数据项29，那么我们首先会把磁盘块1由磁盘加载到内存中，此时进行了一次I/O，在内存中用二分查找确定29在17和35之间，锁定磁盘块1的P2指针，内存计算时间由于非常短（对比于I/O）可以忽略不计，通过磁盘块1的P2指针的磁盘地址指向磁盘块3，由磁盘加载到内存，此时进行了第二次I/O，29在26和30之间，锁定磁盘块3的P2指针，通过指针加载磁盘块8到内存，此时进行了第三次I/O，同时内存中计算二分查找找到29，查询结束。这一过程，一共进行了3次I/O。在真实使用场景中，三层的B+树可以表示上百万的数据，如果上百万的数据查询只需要三次I/O，性能提高将会是巨大的。B+树就是一种索引数据结构，如果没有这样的索引，每个数据项发生一次I/O，那么成本将会大大提升。</p>
+<p><strong>B+树的性质</strong></p>
+<p>在上面的查找例子中，我们可以分析出一些B+树的性质：</p>
+<p>1，I/O的次数取决于B+树的高度H，假设当前数据表的数据为N，每个磁盘块的数据项的数量是M，则有：H=log(M+1)N，当数据量N一定的情况下，M越大，H越小；而M=磁盘块大小/数据项大小，磁盘块大小也就是一个数据页的大小，是固定的，如果数据项占的空间越小，数据项的数量越多，树的高度也就越低。这也就是为什么每个数据项，即索引字段要尽量的小，比如int占4个字节，要比bigint的8个字节小一半。这也是为什么B+树要求把真实数据放在叶子节点内而不是内层节点内，一旦放到内层节点内，磁盘块的数据项会大幅度的下降，导致树层级的增高。当数据项为1时，B+树会退化成线性表。</p>
+<p>2，B+树的数据项是复合性数据结构，比如（name，age，gender）的时候，B+树是按照从左到右的顺序来建立搜索树的，比如当（小张，22，女）这样的数据来检索的时候，B+树会优先比较name来确定下一步的搜索方向，如果name相同再依次比较age和gender，最后得到检索的数据。但是，当（22，女）这样没有name的数据来的时候，B+树就不知道下一步该查哪个节点，因为建立搜索树的时候，name就是第一个比较因子，必须根据name来搜索才知道下一步去哪里查询。比如，当（小张，男）这样的数据来检索时，B+树就可以根据name来指定搜索方向，但下一字段age缺失，所以只能把名字是“小张”的所有数据都找到，然后再匹配性别是“男”的数据了。这个是非常重要的一条性质，即索引的最左匹配特性。</p>
+<h3 id="索引的类型"><a href="#索引的类型" class="headerlink" title="索引的类型"></a>索引的类型</h3><p>在MySQL中，索引分为两大类：聚簇索引和非聚簇索引。聚簇索引是按照数据存放的物理位置为顺序的，而非聚簇索引则不同；聚簇索引能够提高多行检索的速度，而非聚簇索引则对单行的检索速度很快。</p>
+<p>在这两大类的索引类型下，还可以将索引分成四个小类：</p>
+<p>1，普通索引：最基本的索引，没有任何限制，是我们大多数情况下使用到的索引。</p>
+<p>2，唯一索引：与普通索引类型，不同的是唯一索引的列值必须唯一，但允许为空值。</p>
+<p>3，全文索引：全文索引（FULLTEXT）仅可以适用于MyISAM引擎的数据表；作用于CHAR、VARCHAR、TEXT数据类型的列。</p>
+<p>4，组合索引：将几个列作为一条索引进行检索，使用最左匹配原则。</p>
+<p>1.添加PRIMARY KEY（主键索引）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE `table_name` ADD PRIMARY KEY ( `column` )</span><br></pre></td></tr></table></figure>
+
+<p>2.添加UNIQUE(唯一索引) </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE `table_name` ADD UNIQUE ( `column` )</span><br></pre></td></tr></table></figure>
+
+<p>3.添加INDEX(普通索引) </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE `table_name` ADD INDEX index_name ( `column` )</span><br></pre></td></tr></table></figure>
+
+<p>4.添加FULLTEXT(全文索引) </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE `table_name` ADD FULLTEXT ( `column`)</span><br></pre></td></tr></table></figure>
+
+<p>5.添加多列索引</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE `table_name` ADD INDEX index_name ( `column1`, `column2`, `column3` )</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="建立索引的原则"><a href="#建立索引的原则" class="headerlink" title="建立索引的原则"></a>建立索引的原则</h3><p>我们回头来看一开始提到的慢查询，当我们了解完索引原理之后，对慢查询的优化应该有一些想法，这里我们先总结一下建立索引的一些原则：</p>
+<h4 id="1，最左前缀匹配原则"><a href="#1，最左前缀匹配原则" class="headerlink" title="1，最左前缀匹配原则"></a>1，最左前缀匹配原则</h4><p>这是非常重要、非常重要、非常重要（重要的事情说三遍）的原则，MySQL会一直向右匹配直到遇到范围查询（&gt;,&lt;,BETWEEN,LIKE）就停止匹配，比如： a = 1 AND b = 2 AND c &gt; 3 AND d = 4，如果建立 （a,b,c,d）顺序的索引，d是用不到索引的，如果建立（a,b,d,c）的索引，则都可以用到，a,b,d的顺序可以任意调整。</p>
+<h4 id="2，等于（-）和in-可以乱序"><a href="#2，等于（-）和in-可以乱序" class="headerlink" title="2，等于（=）和in 可以乱序"></a>2，等于（=）和in 可以乱序</h4><p>比如，a = 1 AND b = 2 AND c = 3 建立（a,b,c）索引可以任意顺序，MySQL的查询优化器会帮你优化成索引可以识别的模式。</p>
+<h4 id="3，尽量选择区分度高的列作为索引"><a href="#3，尽量选择区分度高的列作为索引" class="headerlink" title="3，尽量选择区分度高的列作为索引"></a>3，尽量选择区分度高的列作为索引</h4><p>区分度的公式是 COUNT(DISTINCT col) / COUNT(*)。表示字段不重复的比率，比率越大我们扫描的记录数就越少，唯一键的区分度是1，而一些状态、性别字段可能在大数据面前区分度是0。可能有人会问，这个比率有什么经验么？使用场景不同，这个值也很难确定，一般需要JOIN的字段我们要求在0.1以上，即平均1条扫描10条记录。</p>
+<h4 id="4，索引列不能参与计算，尽量保持列“干净”"><a href="#4，索引列不能参与计算，尽量保持列“干净”" class="headerlink" title="4，索引列不能参与计算，尽量保持列“干净”"></a>4，索引列不能参与计算，尽量保持列“干净”</h4><p>比如，FROM_UNIXTIME(create_time) = ‘2016-06-06’ 就不能使用索引，原因很简单，B+树中存储的都是数据表中的字段值，但是进行检索时，需要把所有元素都应用函数才能比较，显然这样的代价太大。所以语句要写成 ： create_time = UNIX_TIMESTAMP(‘2016-06-06’)。</p>
+<h4 id="5，尽可能的扩展索引，不要新建立索引。"><a href="#5，尽可能的扩展索引，不要新建立索引。" class="headerlink" title="5，尽可能的扩展索引，不要新建立索引。"></a>5，尽可能的扩展索引，不要新建立索引。</h4><p>比如表中已经有了a的索引，现在要加（a,b）的索引，那么只需要修改原来的索引即可。</p>
+<p>6，单个多列组合索引和多个单列索引的检索查询效果不同，因为在执行SQL时，MySQL只能使用一个索引，会从多个单列索引中选择一个限制最为严格的索引<br>————————————————<br>版权声明：本文为CSDN博主「郭了个治浩」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。<br>原文链接：<a href="https://blog.csdn.net/mysteryhaohao/article/details/51719871" target="_blank" rel="noopener">https://blog.csdn.net/mysteryhaohao/article/details/51719871</a></p>
+<h3 id="索引优化"><a href="#索引优化" class="headerlink" title="索引优化"></a>索引优化</h3><h4 id="1-独立的列"><a href="#1-独立的列" class="headerlink" title="1. 独立的列"></a>1. 独立的列</h4><p>在进行查询时，索引列不能是表达式的一部分，也不能是函数的参数，否则无法使用索引。</p>
+<p>例如下面的查询不能使用 actor_id 列的索引：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> actor_id <span class="keyword">FROM</span> sakila.actor <span class="keyword">WHERE</span> actor_id + <span class="number">1</span> = <span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-多列索引"><a href="#2-多列索引" class="headerlink" title="2. 多列索引"></a>2. 多列索引</h4><p>在需要使用多个列作为条件进行查询时，使用多列索引比使用多个单列索引性能更好。例如下面的语句中，最好把 actor_id 和 film_id 设置为多列索引。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> film_id, actor_ <span class="keyword">id</span> <span class="keyword">FROM</span> sakila.film_actor</span><br><span class="line"><span class="keyword">WHERE</span> actor_id = <span class="number">1</span> <span class="keyword">AND</span> film_id = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-索引列的顺序"><a href="#3-索引列的顺序" class="headerlink" title="3. 索引列的顺序"></a>3. 索引列的顺序</h4><p>索引的选择性是指：不重复的索引值和记录总数的比值。最大值为 1，此时每个记录都有唯一的索引与其对应。选择性越高，每个记录的区分度越高，查询效率也越高。</p>
+<p>例如下面显示的结果中 customer_id 的选择性比 staff_id 更高，因此最好把 customer_id 列放在多列索引的前面。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> staff_id)/<span class="keyword">COUNT</span>(*) <span class="keyword">AS</span> staff_id_selectivity,</span><br><span class="line"><span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> customer_id)/<span class="keyword">COUNT</span>(*) <span class="keyword">AS</span> customer_id_selectivity,</span><br><span class="line"><span class="keyword">COUNT</span>(*)</span><br><span class="line"><span class="keyword">FROM</span> payment;</span><br><span class="line">   staff_id_selectivity: 0.0001</span><br><span class="line">customer_id_selectivity: 0.0373</span><br><span class="line">               COUNT(*): 16049</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-前缀索引"><a href="#4-前缀索引" class="headerlink" title="4. 前缀索引"></a>4. 前缀索引</h4><p>对于 BLOB、TEXT 和 VARCHAR 类型的列，必须使用前缀索引，只索引开始的部分字符。</p>
+<p>前缀长度的选取需要根据索引选择性来确定。</p>
+<h4 id="5-覆盖索引"><a href="#5-覆盖索引" class="headerlink" title="5. 覆盖索引"></a>5. 覆盖索引</h4><p>索引包含所有需要查询的字段的值。</p>
+<p>具有以下优点：</p>
+<ul>
+<li>索引通常远小于数据行的大小，只读取索引能大大减少数据访问量。</li>
+<li>一些存储引擎（例如 MyISAM）在内存中只缓存索引，而数据依赖于操作系统来缓存。因此，只访问索引可以不使用系统调用（通常比较费时）。</li>
+<li>对于 InnoDB 引擎，若辅助索引能够覆盖查询，则无需访问主索引。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2019/11/05/%E9%94%81%E6%9C%BA%E5%88%B6/" rel="next" title="锁机制">
+                  <i class="fa fa-chevron-left"></i> 锁机制
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#B-Tree-原理"><span class="nav-number">1.</span> <span class="nav-text">B+ Tree 原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引的类型"><span class="nav-number">2.</span> <span class="nav-text">索引的类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#建立索引的原则"><span class="nav-number">3.</span> <span class="nav-text">建立索引的原则</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1，最左前缀匹配原则"><span class="nav-number">3.1.</span> <span class="nav-text">1，最左前缀匹配原则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2，等于（-）和in-可以乱序"><span class="nav-number">3.2.</span> <span class="nav-text">2，等于（=）和in 可以乱序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3，尽量选择区分度高的列作为索引"><span class="nav-number">3.3.</span> <span class="nav-text">3，尽量选择区分度高的列作为索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4，索引列不能参与计算，尽量保持列“干净”"><span class="nav-number">3.4.</span> <span class="nav-text">4，索引列不能参与计算，尽量保持列“干净”</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5，尽可能的扩展索引，不要新建立索引。"><span class="nav-number">3.5.</span> <span class="nav-text">5，尽可能的扩展索引，不要新建立索引。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引优化"><span class="nav-number">4.</span> <span class="nav-text">索引优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-独立的列"><span class="nav-number">4.1.</span> <span class="nav-text">1. 独立的列</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-多列索引"><span class="nav-number">4.2.</span> <span class="nav-text">2. 多列索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-索引列的顺序"><span class="nav-number">4.3.</span> <span class="nav-text">3. 索引列的顺序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-前缀索引"><span class="nav-number">4.4.</span> <span class="nav-text">4. 前缀索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-覆盖索引"><span class="nav-number">4.5.</span> <span class="nav-text">5. 覆盖索引</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <img class="site-author-image" itemprop="image" alt="wingkywingky"
+    src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">wingkywingky</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wingkywingky</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.0.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.4.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

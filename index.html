@@ -180,6 +180,134 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/05/%E7%B4%A2%E5%BC%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wingkywingky">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sagittarius">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/05/%E7%B4%A2%E5%BC%95/" class="post-title-link" itemprop="url">索引</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-05 14:24:14 / 修改时间：15:21:30" itemprop="dateCreated datePublished" datetime="2019-11-05T14:24:14+08:00">2019-11-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="B-Tree-原理"><a href="#B-Tree-原理" class="headerlink" title="B+ Tree 原理"></a>B+ Tree 原理</h3><p>详解B+树</p>
+<p><img src="https://img-blog.csdn.net/20160620140312586" alt="img"></p>
+<p>如上图，是一棵B+树。B+树的定义，童鞋可以自行百度，我们只说一些重点。图中浅蓝色的块，我们称之为一个磁盘，可以看到，每个磁盘块包含几个数据项（深蓝色）和指针（黄色）。如：磁盘块1包含数据17和数据35，包含指针P1,P2,P3，P1指向数据小于17的磁盘块，P2指向数据在17到35之间的数据所在磁盘块，P3指向数据大于35的数据所在的磁盘块。真实数据存在于叶子节点，即3，5，9，10，13，15，28，29，36，60，75，79，90，99 。 非叶子节点不存储真实数据，只存储指引搜索方向的数据项，如17、35并不真实存在于数据表中。</p>
+<p><strong>B+树的查找过程</strong></p>
+<p>还是使用上面的B+树。假设，我们要查找数据项29，那么我们首先会把磁盘块1由磁盘加载到内存中，此时进行了一次I/O，在内存中用二分查找确定29在17和35之间，锁定磁盘块1的P2指针，内存计算时间由于非常短（对比于I/O）可以忽略不计，通过磁盘块1的P2指针的磁盘地址指向磁盘块3，由磁盘加载到内存，此时进行了第二次I/O，29在26和30之间，锁定磁盘块3的P2指针，通过指针加载磁盘块8到内存，此时进行了第三次I/O，同时内存中计算二分查找找到29，查询结束。这一过程，一共进行了3次I/O。在真实使用场景中，三层的B+树可以表示上百万的数据，如果上百万的数据查询只需要三次I/O，性能提高将会是巨大的。B+树就是一种索引数据结构，如果没有这样的索引，每个数据项发生一次I/O，那么成本将会大大提升。</p>
+<p><strong>B+树的性质</strong></p>
+<p>在上面的查找例子中，我们可以分析出一些B+树的性质：</p>
+<p>1，I/O的次数取决于B+树的高度H，假设当前数据表的数据为N，每个磁盘块的数据项的数量是M，则有：H=log(M+1)N，当数据量N一定的情况下，M越大，H越小；而M=磁盘块大小/数据项大小，磁盘块大小也就是一个数据页的大小，是固定的，如果数据项占的空间越小，数据项的数量越多，树的高度也就越低。这也就是为什么每个数据项，即索引字段要尽量的小，比如int占4个字节，要比bigint的8个字节小一半。这也是为什么B+树要求把真实数据放在叶子节点内而不是内层节点内，一旦放到内层节点内，磁盘块的数据项会大幅度的下降，导致树层级的增高。当数据项为1时，B+树会退化成线性表。</p>
+<p>2，B+树的数据项是复合性数据结构，比如（name，age，gender）的时候，B+树是按照从左到右的顺序来建立搜索树的，比如当（小张，22，女）这样的数据来检索的时候，B+树会优先比较name来确定下一步的搜索方向，如果name相同再依次比较age和gender，最后得到检索的数据。但是，当（22，女）这样没有name的数据来的时候，B+树就不知道下一步该查哪个节点，因为建立搜索树的时候，name就是第一个比较因子，必须根据name来搜索才知道下一步去哪里查询。比如，当（小张，男）这样的数据来检索时，B+树就可以根据name来指定搜索方向，但下一字段age缺失，所以只能把名字是“小张”的所有数据都找到，然后再匹配性别是“男”的数据了。这个是非常重要的一条性质，即索引的最左匹配特性。</p>
+<h3 id="索引的类型"><a href="#索引的类型" class="headerlink" title="索引的类型"></a>索引的类型</h3><p>在MySQL中，索引分为两大类：聚簇索引和非聚簇索引。聚簇索引是按照数据存放的物理位置为顺序的，而非聚簇索引则不同；聚簇索引能够提高多行检索的速度，而非聚簇索引则对单行的检索速度很快。</p>
+<p>在这两大类的索引类型下，还可以将索引分成四个小类：</p>
+<p>1，普通索引：最基本的索引，没有任何限制，是我们大多数情况下使用到的索引。</p>
+<p>2，唯一索引：与普通索引类型，不同的是唯一索引的列值必须唯一，但允许为空值。</p>
+<p>3，全文索引：全文索引（FULLTEXT）仅可以适用于MyISAM引擎的数据表；作用于CHAR、VARCHAR、TEXT数据类型的列。</p>
+<p>4，组合索引：将几个列作为一条索引进行检索，使用最左匹配原则。</p>
+<p>1.添加PRIMARY KEY（主键索引）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE `table_name` ADD PRIMARY KEY ( `column` )</span><br></pre></td></tr></table></figure>
+
+<p>2.添加UNIQUE(唯一索引) </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE `table_name` ADD UNIQUE ( `column` )</span><br></pre></td></tr></table></figure>
+
+<p>3.添加INDEX(普通索引) </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE `table_name` ADD INDEX index_name ( `column` )</span><br></pre></td></tr></table></figure>
+
+<p>4.添加FULLTEXT(全文索引) </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE `table_name` ADD FULLTEXT ( `column`)</span><br></pre></td></tr></table></figure>
+
+<p>5.添加多列索引</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE `table_name` ADD INDEX index_name ( `column1`, `column2`, `column3` )</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="建立索引的原则"><a href="#建立索引的原则" class="headerlink" title="建立索引的原则"></a>建立索引的原则</h3><p>我们回头来看一开始提到的慢查询，当我们了解完索引原理之后，对慢查询的优化应该有一些想法，这里我们先总结一下建立索引的一些原则：</p>
+<h4 id="1，最左前缀匹配原则"><a href="#1，最左前缀匹配原则" class="headerlink" title="1，最左前缀匹配原则"></a>1，最左前缀匹配原则</h4><p>这是非常重要、非常重要、非常重要（重要的事情说三遍）的原则，MySQL会一直向右匹配直到遇到范围查询（&gt;,&lt;,BETWEEN,LIKE）就停止匹配，比如： a = 1 AND b = 2 AND c &gt; 3 AND d = 4，如果建立 （a,b,c,d）顺序的索引，d是用不到索引的，如果建立（a,b,d,c）的索引，则都可以用到，a,b,d的顺序可以任意调整。</p>
+<h4 id="2，等于（-）和in-可以乱序"><a href="#2，等于（-）和in-可以乱序" class="headerlink" title="2，等于（=）和in 可以乱序"></a>2，等于（=）和in 可以乱序</h4><p>比如，a = 1 AND b = 2 AND c = 3 建立（a,b,c）索引可以任意顺序，MySQL的查询优化器会帮你优化成索引可以识别的模式。</p>
+<h4 id="3，尽量选择区分度高的列作为索引"><a href="#3，尽量选择区分度高的列作为索引" class="headerlink" title="3，尽量选择区分度高的列作为索引"></a>3，尽量选择区分度高的列作为索引</h4><p>区分度的公式是 COUNT(DISTINCT col) / COUNT(*)。表示字段不重复的比率，比率越大我们扫描的记录数就越少，唯一键的区分度是1，而一些状态、性别字段可能在大数据面前区分度是0。可能有人会问，这个比率有什么经验么？使用场景不同，这个值也很难确定，一般需要JOIN的字段我们要求在0.1以上，即平均1条扫描10条记录。</p>
+<h4 id="4，索引列不能参与计算，尽量保持列“干净”"><a href="#4，索引列不能参与计算，尽量保持列“干净”" class="headerlink" title="4，索引列不能参与计算，尽量保持列“干净”"></a>4，索引列不能参与计算，尽量保持列“干净”</h4><p>比如，FROM_UNIXTIME(create_time) = ‘2016-06-06’ 就不能使用索引，原因很简单，B+树中存储的都是数据表中的字段值，但是进行检索时，需要把所有元素都应用函数才能比较，显然这样的代价太大。所以语句要写成 ： create_time = UNIX_TIMESTAMP(‘2016-06-06’)。</p>
+<h4 id="5，尽可能的扩展索引，不要新建立索引。"><a href="#5，尽可能的扩展索引，不要新建立索引。" class="headerlink" title="5，尽可能的扩展索引，不要新建立索引。"></a>5，尽可能的扩展索引，不要新建立索引。</h4><p>比如表中已经有了a的索引，现在要加（a,b）的索引，那么只需要修改原来的索引即可。</p>
+<p>6，单个多列组合索引和多个单列索引的检索查询效果不同，因为在执行SQL时，MySQL只能使用一个索引，会从多个单列索引中选择一个限制最为严格的索引<br>————————————————<br>版权声明：本文为CSDN博主「郭了个治浩」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。<br>原文链接：<a href="https://blog.csdn.net/mysteryhaohao/article/details/51719871" target="_blank" rel="noopener">https://blog.csdn.net/mysteryhaohao/article/details/51719871</a></p>
+<h3 id="索引优化"><a href="#索引优化" class="headerlink" title="索引优化"></a>索引优化</h3><h4 id="1-独立的列"><a href="#1-独立的列" class="headerlink" title="1. 独立的列"></a>1. 独立的列</h4><p>在进行查询时，索引列不能是表达式的一部分，也不能是函数的参数，否则无法使用索引。</p>
+<p>例如下面的查询不能使用 actor_id 列的索引：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> actor_id <span class="keyword">FROM</span> sakila.actor <span class="keyword">WHERE</span> actor_id + <span class="number">1</span> = <span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-多列索引"><a href="#2-多列索引" class="headerlink" title="2. 多列索引"></a>2. 多列索引</h4><p>在需要使用多个列作为条件进行查询时，使用多列索引比使用多个单列索引性能更好。例如下面的语句中，最好把 actor_id 和 film_id 设置为多列索引。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> film_id, actor_ <span class="keyword">id</span> <span class="keyword">FROM</span> sakila.film_actor</span><br><span class="line"><span class="keyword">WHERE</span> actor_id = <span class="number">1</span> <span class="keyword">AND</span> film_id = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-索引列的顺序"><a href="#3-索引列的顺序" class="headerlink" title="3. 索引列的顺序"></a>3. 索引列的顺序</h4><p>索引的选择性是指：不重复的索引值和记录总数的比值。最大值为 1，此时每个记录都有唯一的索引与其对应。选择性越高，每个记录的区分度越高，查询效率也越高。</p>
+<p>例如下面显示的结果中 customer_id 的选择性比 staff_id 更高，因此最好把 customer_id 列放在多列索引的前面。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> staff_id)/<span class="keyword">COUNT</span>(*) <span class="keyword">AS</span> staff_id_selectivity,</span><br><span class="line"><span class="keyword">COUNT</span>(<span class="keyword">DISTINCT</span> customer_id)/<span class="keyword">COUNT</span>(*) <span class="keyword">AS</span> customer_id_selectivity,</span><br><span class="line"><span class="keyword">COUNT</span>(*)</span><br><span class="line"><span class="keyword">FROM</span> payment;</span><br><span class="line">   staff_id_selectivity: 0.0001</span><br><span class="line">customer_id_selectivity: 0.0373</span><br><span class="line">               COUNT(*): 16049</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-前缀索引"><a href="#4-前缀索引" class="headerlink" title="4. 前缀索引"></a>4. 前缀索引</h4><p>对于 BLOB、TEXT 和 VARCHAR 类型的列，必须使用前缀索引，只索引开始的部分字符。</p>
+<p>前缀长度的选取需要根据索引选择性来确定。</p>
+<h4 id="5-覆盖索引"><a href="#5-覆盖索引" class="headerlink" title="5. 覆盖索引"></a>5. 覆盖索引</h4><p>索引包含所有需要查询的字段的值。</p>
+<p>具有以下优点：</p>
+<ul>
+<li>索引通常远小于数据行的大小，只读取索引能大大减少数据访问量。</li>
+<li>一些存储引擎（例如 MyISAM）在内存中只缓存索引，而数据依赖于操作系统来缓存。因此，只访问索引可以不使用系统调用（通常比较费时）。</li>
+<li>对于 InnoDB 引擎，若辅助索引能够覆盖查询，则无需访问主索引。</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/05/%E9%94%81%E6%9C%BA%E5%88%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1545,98 +1673,6 @@ Mysql中锁定 粒度最小 的一种锁，只针对当前操作的行进行加�
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/02/ConcurrentHashMap%E7%9A%84%E5%AE%9E%E7%8E%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="wingkywingky">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sagittarius">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/11/02/ConcurrentHashMap%E7%9A%84%E5%AE%9E%E7%8E%B0/" class="post-title-link" itemprop="url">ConcurrentHashMap的实现</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-11-02 23:03:29 / 修改时间：23:11:56" itemprop="dateCreated datePublished" datetime="2019-11-02T23:03:29+08:00">2019-11-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index">
-                    <span itemprop="name">JAVA多线程</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="存储结构"><a href="#存储结构" class="headerlink" title="存储结构"></a>存储结构</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">HashEntry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">    <span class="keyword">final</span> K key;</span><br><span class="line">    <span class="keyword">volatile</span> V value;</span><br><span class="line">    <span class="keyword">volatile</span> HashEntry&lt;K,V&gt; next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>ConcurrentHashMap  和 HashMap 实现上类似，最主要的差别是 ConcurrentHashMap  采用了分段锁（Segment），每个分段锁维护着几个桶（HashEntry），多个线程可以同时访问不同分段锁上的桶，从而使其并发度更高（并发度就是  Segment 的个数）。</p>
-<p>Segment 继承自 ReentrantLock。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Segment</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">ReentrantLock</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">2249069246763182397L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAX_SCAN_RETRIES =</span><br><span class="line">        Runtime.getRuntime().availableProcessors() &gt; <span class="number">1</span> ? <span class="number">64</span> : <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">transient</span> <span class="keyword">volatile</span> HashEntry&lt;K,V&gt;[] table;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">transient</span> <span class="keyword">int</span> count;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">transient</span> <span class="keyword">int</span> modCount;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">transient</span> <span class="keyword">int</span> threshold;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">float</span> loadFactor;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">final</span> Segment&lt;K,V&gt;[] segments;</span><br></pre></td></tr></table></figure>
-
-<p>默认的并发级别为 16，也就是说默认创建 16 个 Segment。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DEFAULT_CONCURRENCY_LEVEL = <span class="number">16</span>;</span><br></pre></td></tr></table></figure>
-
-<p> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/db808eff-31d7-4229-a4ad-b8ae71870a3a.png" alt="img"> </p>
-<h3 id="size-操作"><a href="#size-操作" class="headerlink" title="size()操作"></a>size()操作</h3><p>每个 Segment 维护了一个 count 变量来统计该 Segment 中的键值对个数。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The number of elements. Accessed only either within locks</span></span><br><span class="line"><span class="comment"> * or among other volatile reads that maintain visibility.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">transient</span> <span class="keyword">int</span> count;</span><br></pre></td></tr></table></figure>
-
-<p>在执行 size 操作时，需要遍历所有 Segment 然后把 count 累计起来。</p>
-<p>ConcurrentHashMap 在执行 size 操作时先尝试不加锁，如果连续两次不加锁操作得到的结果一致，那么可以认为这个结果是正确的。</p>
-<p>尝试次数使用 RETRIES_BEFORE_LOCK 定义，该值为 2，retries 初始值为 -1，因此尝试次数为 3。</p>
-<p>如果尝试的次数超过 3 次，就需要对每个 Segment 加锁。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Number of unsynchronized retries in size and containsValue</span></span><br><span class="line"><span class="comment"> * methods before resorting to locking. This is used to avoid</span></span><br><span class="line"><span class="comment"> * unbounded retries if tables undergo continuous modification</span></span><br><span class="line"><span class="comment"> * which would make it impossible to obtain an accurate result.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> RETRIES_BEFORE_LOCK = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">size</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Try a few times to get accurate count. On failure due to</span></span><br><span class="line">    <span class="comment">// continuous async changes in table, resort to locking.</span></span><br><span class="line">    <span class="keyword">final</span> Segment&lt;K,V&gt;[] segments = <span class="keyword">this</span>.segments;</span><br><span class="line">    <span class="keyword">int</span> size;</span><br><span class="line">    <span class="keyword">boolean</span> overflow; <span class="comment">// true if size overflows 32 bits</span></span><br><span class="line">    <span class="keyword">long</span> sum;         <span class="comment">// sum of modCounts</span></span><br><span class="line">    <span class="keyword">long</span> last = <span class="number">0L</span>;   <span class="comment">// previous sum</span></span><br><span class="line">    <span class="keyword">int</span> retries = -<span class="number">1</span>; <span class="comment">// first iteration isn't retry</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="comment">// 超过尝试次数，则对每个 Segment 加锁</span></span><br><span class="line">            <span class="keyword">if</span> (retries++ == RETRIES_BEFORE_LOCK) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; segments.length; ++j)</span><br><span class="line">                    ensureSegment(j).lock(); <span class="comment">// force creation</span></span><br><span class="line">            &#125;</span><br><span class="line">            sum = <span class="number">0L</span>;</span><br><span class="line">            size = <span class="number">0</span>;</span><br><span class="line">            overflow = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; segments.length; ++j) &#123;</span><br><span class="line">                Segment&lt;K,V&gt; seg = segmentAt(segments, j);</span><br><span class="line">                <span class="keyword">if</span> (seg != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    sum += seg.modCount;</span><br><span class="line">                    <span class="keyword">int</span> c = seg.count;</span><br><span class="line">                    <span class="keyword">if</span> (c &lt; <span class="number">0</span> || (size += c) &lt; <span class="number">0</span>)</span><br><span class="line">                        overflow = <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 连续两次得到的结果一致，则认为这个结果是正确的</span></span><br><span class="line">            <span class="keyword">if</span> (sum == last)</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            last = sum;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (retries &gt; RETRIES_BEFORE_LOCK) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; segments.length; ++j)</span><br><span class="line">                segmentAt(segments, j).unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> overflow ? Integer.MAX_VALUE : size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="改动"><a href="#改动" class="headerlink" title="改动"></a>改动</h3><p>JDK 1.7 使用分段锁机制来实现并发更新操作，核心类为 Segment，它继承自重入锁 ReentrantLock，并发度与 Segment 数量相等。</p>
-<p>JDK 1.8 使用了 CAS 操作来支持更高的并发度，在 CAS 操作失败时使用内置锁 synchronized。</p>
-<p>并且 JDK 1.8 的实现也在链表过长时会转换为红黑树。</p>
-<p>synchronized只锁定当前链表或红黑二叉树的首节点，这样只要hash不冲突，就不会产生并发，效率又提升N倍。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1687,7 +1723,7 @@ Mysql中锁定 粒度最小 的一种锁，只针对当前操作的行进行加�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-count">30</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
