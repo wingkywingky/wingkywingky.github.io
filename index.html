@@ -180,6 +180,115 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/10/%E5%87%A0%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wingkywingky">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sagittarius">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/10/%E5%87%A0%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" class="post-title-link" itemprop="url">几种排序算法</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-10 16:23:42 / 修改时间：16:37:29" itemprop="dateCreated datePublished" datetime="2019-11-10T16:23:42+08:00">2019-11-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%89%8B%E6%92%95%E4%BB%A3%E7%A0%81/" itemprop="url" rel="index">
+                    <span itemprop="name">手撕代码</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">private static void insertSort(int[] arr) &#123;</span><br><span class="line">	// TODO Auto-generated method stub</span><br><span class="line">	</span><br><span class="line">	int i,j,temp;</span><br><span class="line">	for(i=1;i&lt;arr.length;i++) &#123;//从第二个数往后遍历</span><br><span class="line">		temp=arr[i];//暂存第i个元素</span><br><span class="line">		for(j=i-1;j&gt;=0;j--) &#123;//从i-1个元素往前遍历</span><br><span class="line">			if(temp&lt;=arr[j]) &#123;//temp&lt;=arr[j]时，元素后移一位</span><br><span class="line">				arr[j+1]=arr[j];</span><br><span class="line">			&#125;else &#123;</span><br><span class="line">				break;</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">		&#125;</span><br><span class="line">		arr[j+1]=temp;//插入</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>时间复杂度O(n^2)</li>
+<li>稳定排序</li>
+<li>使用于链式结构，也使用于数组</li>
+<li>适合初始基本有序的情况，当初始无序 N较大是不适用</li>
+</ol>
+<h3 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">private static void selectSort(int[] arr) &#123;</span><br><span class="line"></span><br><span class="line">	for (int i = 0; i &lt; arr.length - 1; i++) &#123;//选择一趟最小元素</span><br><span class="line">		int min = i;//把当前指向的第一个元素的下标存在min中</span><br><span class="line">		for (int j = i + 1; j &lt; arr.length - 1; j++) &#123;//遍历当前指向的第一个元素后面的元素</span><br><span class="line">			if (arr[j] &lt; arr[min]) &#123;//如果找到比第一个元素小的，把较小的元素下标存在min中</span><br><span class="line"></span><br><span class="line">				min = j;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		if (min != i) &#123;//如果min不等于开始存的第一个元素的下标，则把第一个元素与较小的元素做交换</span><br><span class="line">			int temp = arr[i];</span><br><span class="line">			arr[i] = arr[min];</span><br><span class="line">			arr[min] = temp;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p>时间复杂度O(n^2)</p>
+</li>
+<li><p>不稳定</p>
+</li>
+<li><p>使用于链式结构，也使用于数组</p>
+</li>
+</ol>
+<h3 id="冒泡排序"><a href="#冒泡排序" class="headerlink" title="冒泡排序"></a>冒泡排序</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">private static void bubbleSort(int[] arr) &#123;</span><br><span class="line">	</span><br><span class="line">	int n = arr.length-1;//取数组长度</span><br><span class="line">	</span><br><span class="line">	for(int i=0 ;i&lt;n;i++) &#123;//冒泡的趟数</span><br><span class="line">		boolean flag = false;//表示不发生交换</span><br><span class="line">		for(int j =0;j&lt;n-i;j++) &#123;//剩下的进行冒泡的元素</span><br><span class="line">			if(arr[j]&gt;arr[j+1]) &#123;//若该元素比下一个元素大则把交换标志置位true，交换两个数</span><br><span class="line">				flag = true;</span><br><span class="line">				int temp = arr[j];</span><br><span class="line">				arr[j] = arr[j+1];</span><br><span class="line">				arr[j+1] = temp;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		if(!flag) break;//没发生数据交换退出排序</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>时间复杂度O(n^2)</li>
+<li>不稳定</li>
+<li>使用于链式结构，也使用于数组</li>
+<li>N较大是不适用</li>
+</ol>
+<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">private static void quickSort(int[] arr, int low, int high) &#123;</span><br><span class="line">		if (low &lt; high) &#123;</span><br><span class="line">			int Index = getIndex(arr, low, high);//取得本次排序标记元素的索引</span><br><span class="line">			quickSort(arr, 0, Index - 1);//递归标记左边的子序列</span><br><span class="line">			quickSort(arr, Index + 1, high);//递归标记右边的子序列</span><br><span class="line"></span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	private static int getIndex(int[] arr, int low, int high) &#123;</span><br><span class="line"></span><br><span class="line">		int temp = arr[low];//用temp暂存第一个元素作为标记</span><br><span class="line">		while (low &lt; high) &#123;</span><br><span class="line">			while (low &lt; high &amp;&amp; arr[high] &gt;= temp) &#123;</span><br><span class="line">				high--;//当low指针小于high，而high指针指向的值有大于标记时，high指针往前移</span><br><span class="line">			&#125;</span><br><span class="line">			arr[low] = arr[high];//否则交换low指针和high指针指向的值</span><br><span class="line"></span><br><span class="line">			while (low &lt; high &amp;&amp; arr[low] &lt;= temp) &#123;</span><br><span class="line">				low++;//当low指针小于high，而low指针指向的值有小于标记时，low指针往后移</span><br><span class="line">			&#125;</span><br><span class="line">			arr[high] = arr[low];//否则交换low指针和high指针指向的值</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		arr[low] = temp;//最后low与high指针重合的所指向的索引就是标记元素所存放的地方</span><br><span class="line"></span><br><span class="line">		return low;//最后返回标记的索引位置</span><br><span class="line"></span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>时间复杂度O(nlog2n)</li>
+<li>不稳定</li>
+<li>当初始无序 N较大适用</li>
+</ol>
+<h3 id="归并排序"><a href="#归并排序" class="headerlink" title="归并排序"></a>归并排序</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">private static void mergeSort(int[] arr, int start, int end) &#123;</span><br><span class="line">		if (start &lt; end) &#123;//递归结束条件是切分到只剩一个元素</span><br><span class="line">			int mid = (start + end) / 2;</span><br><span class="line">			mergeSort(arr, start, mid);//对左边子序列进行切分</span><br><span class="line">			mergeSort(arr, mid + 1, end);//对右边子序列进行切分</span><br><span class="line">			merge(arr, start, mid, end);//合并</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	private static void merge(int[] arr, int start, int mid, int end) &#123;</span><br><span class="line">		int[] temp = new int[arr.length];//临时数组用来暂存排序后的数组</span><br><span class="line">		int p1 = start;//指向左边第一个元素</span><br><span class="line">		int p2 = mid + 1;//指向mid后边第一个元素</span><br><span class="line">		int k = start;</span><br><span class="line">		while (p1 &lt;= mid &amp;&amp; p2 &lt;= end) &#123;</span><br><span class="line">			if (arr[p1] &lt;= arr[p2]) &#123;//p1指向的值小于等于p2指向的值，则把p1存在temp数组里，继续向后遍历</span><br><span class="line">				temp[k] = arr[p1];</span><br><span class="line">				k++;</span><br><span class="line">				p1++;</span><br><span class="line">			&#125; else &#123;//同上</span><br><span class="line">				temp[k] = arr[p2];</span><br><span class="line">				k++;</span><br><span class="line">				p2++;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		while (p1 &lt;= mid) &#123;//左边子数组还没遍历完，把剩下的数放到temp里</span><br><span class="line">			temp[k] = arr[p1];</span><br><span class="line">			k++;</span><br><span class="line">			p1++;</span><br><span class="line">		&#125;</span><br><span class="line">		while (p2 &lt;= end) &#123;//同上</span><br><span class="line">			temp[k] = arr[p2];</span><br><span class="line">			k++;</span><br><span class="line">			p2++;</span><br><span class="line">		&#125;</span><br><span class="line">		for (int i = start; i &lt;= end; i++) &#123;//把temp数组逐一放到原数组中</span><br><span class="line">			arr[i] = temp[i];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>时间复杂度O(nlog2n)</li>
+<li>稳定</li>
+<li>使用于链式结构，也使用于数组</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/05/%E4%BC%98%E5%8C%96/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1554,152 +1663,6 @@ Mysql中锁定 粒度最小 的一种锁，只针对当前操作的行进行加�
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/03/JUC%E4%B9%8BAtomic%E5%8E%9F%E5%AD%90%E7%B1%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="wingkywingky">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sagittarius">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/11/03/JUC%E4%B9%8BAtomic%E5%8E%9F%E5%AD%90%E7%B1%BB/" class="post-title-link" itemprop="url">JUC之Atomic原子类</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-11-03 16:10:56 / 修改时间：16:31:03" itemprop="dateCreated datePublished" datetime="2019-11-03T16:10:56+08:00">2019-11-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index">
-                    <span itemprop="name">JAVA多线程</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="CAS操作"><a href="#CAS操作" class="headerlink" title="CAS操作"></a>CAS操作</h3><ul>
-<li><p>什么是CAS</p>
-<p>使用锁时，线程获取锁是一种悲观锁策略，即假设每一次执行临界区代码都会产生冲突，所以当前线程获取到锁的时候同时也会阻塞其他线程获取该锁。而CAS操作（又称为无锁操作）是一种乐观锁策略，它假设所有线程访问共享资源的时候不会出现冲突，既然不会出现冲突自然而然就不会阻塞其他线程的操作。因此，线程就不会出现阻塞停顿的状态。那么，如果出现冲突了怎么办？无锁操作是使用CAS(compare and swap)又叫做比较交换来鉴别线程是否出现冲突，出现冲突就重试当前操作直到没有冲突为止。</p>
-</li>
-<li><p>CAS的操作过程</p>
-<p>CAS比较交换的过程可以通俗的理解为CAS(V,O,N)，包含三个值分别为：V 内存地址存放的实际值；O 预期的值（旧值）；N 更新的新值。当V和O相同时，也就是说旧值和内存中实际的值相同表明该值没有被其他线程更改过，即该旧值O就是目前来说最新的值了，自然而然可以将新值N赋值给V。反之，V和O不相同，表明该值已经被其他线程改过了则该旧值O不是最新版本的值了，所以不能将新值N赋给V，返回V即可。当多个线程使用CAS操作一个变量是，只有一个线程会成功，并成功更新，其余会失败。失败的线程会重新尝试，当然也可以选择挂起线程</p>
-<p>CAS的实现需要硬件指令集的支撑，在JDK1.5后虚拟机才可以使用处理器提供的CMPXCHG指令实现。</p>
-</li>
-<li><p>CAS的问题</p>
-<ol>
-<li><p>ABA问题 </p>
-<p>因为CAS会检查旧值有没有变化，这里存在这样一个有意思的问题。比如一个旧值A变为了成B，然后再变成A，刚好在做CAS时检查发现旧值并没有变化依然为A，但是实际上的确发生了变化。解决方案可以沿袭数据库中常用的乐观锁方式，添加一个版本号可以解决。原来的变化路径A-&gt;B-&gt;A就变成了1A-&gt;2B-&gt;3C。</p>
-</li>
-<li><p>自旋时间过长</p>
-<p>使用CAS时非阻塞同步，也就是说不会将线程挂起，会自旋（无非就是一个死循环）进行下一次尝试，如果这里自旋时间过长对性能是很大的消耗。如果JVM能支持处理器提供的pause指令，那么在效率上会有一定的提升</p>
-</li>
-</ol>
-</li>
-</ul>
-<h3 id="Atomic类介绍"><a href="#Atomic类介绍" class="headerlink" title="Atomic类介绍"></a>Atomic类介绍</h3><p>Atomic 翻译成中文是原子的意思。在化学上，我们知道原子是构成一般物质的最小单位，在化学反应中是不可分割的。在我们这里 Atomic 是指一个操作是不可中断的。即使是在多个线程一起执行的时候，一个操作一旦开始，就不会被其他线程干扰。</p>
-<p>所以，所谓原子类说简单点就是具有原子/原子操作特征的类。</p>
-<p>并发包 <code>java.util.concurrent</code> 的原子类都存放在<code>java.util.concurrent.atomic</code>下,如下图所示。</p>
-<p><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-6/JUC%E5%8E%9F%E5%AD%90%E7%B1%BB%E6%A6%82%E8%A7%88.png" alt="JUC原子类概览"></p>
-<p>根据操作的数据类型，可以将JUC包中的原子类分为4类</p>
-<p><strong>基本类型</strong> </p>
-<p>使用原子的方式更新基本类型</p>
-<ul>
-<li>AtomicInteger：整型原子类</li>
-<li>AtomicLong：长整型原子类</li>
-<li>AtomicBoolean ：布尔型原子类</li>
-</ul>
-<p><strong>数组类型</strong></p>
-<p>使用原子的方式更新数组里的某个元素</p>
-<ul>
-<li>AtomicIntegerArray：整型数组原子类</li>
-<li>AtomicLongArray：长整型数组原子类</li>
-<li>AtomicReferenceArray ：引用类型数组原子类</li>
-</ul>
-<p><strong>引用类型</strong></p>
-<ul>
-<li>AtomicReference：引用类型原子类</li>
-<li>AtomicReferenceFieldUpdater：原子更新引用类型里的字段</li>
-<li>AtomicMarkableReference ：原子更新带有标记位的引用类型</li>
-</ul>
-<p><strong>对象的属性修改类型</strong></p>
-<ul>
-<li>AtomicIntegerFieldUpdater:原子更新整型字段的更新器</li>
-<li>AtomicLongFieldUpdater：原子更新长整型字段的更新器</li>
-<li>AtomicStampedReference ：原子更新带有版本号的引用类型。该类将整数值与引用关联起来，可用于解决原子的更新数据和数据的版本号，可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。</li>
-<li>AtomicMarkableReference：原子更新带有标记的引用类型。该类将 boolean 标记与引用关联起来，也可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。</li>
-</ul>
-<h3 id="基本类型原子类"><a href="#基本类型原子类" class="headerlink" title="基本类型原子类"></a>基本类型原子类</h3><p>使用原子的方式更新基本类型</p>
-<ul>
-<li>AtomicInteger：整型原子类</li>
-<li>AtomicLong：长整型原子类</li>
-<li>AtomicBoolean ：布尔型原子类</li>
-</ul>
-<p>上面三个类提供的方法几乎相同，所以我们这里以 AtomicInteger 为例子来介绍。</p>
-<p> <strong>AtomicInteger 类常用方法</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">get</span><span class="params">()</span> <span class="comment">//获取当前的值</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndSet</span><span class="params">(<span class="keyword">int</span> newValue)</span><span class="comment">//获取当前的值，并设置新的值</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndIncrement</span><span class="params">()</span><span class="comment">//获取当前的值，并自增</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndDecrement</span><span class="params">()</span> <span class="comment">//获取当前的值，并自减</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndAdd</span><span class="params">(<span class="keyword">int</span> delta)</span> <span class="comment">//获取当前的值，并加上预期的值</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">int</span> expect, <span class="keyword">int</span> update)</span> <span class="comment">//如果输入的数值等于预期值，则以原子方式将该值设置为输入值（update）</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lazySet</span><span class="params">(<span class="keyword">int</span> newValue)</span><span class="comment">//最终设置为newValue,使用 lazySet 设置之后可能导致其他线程在之后</span></span></span><br></pre></td></tr></table></figure>
-
-<h3 id="数组类型原子类"><a href="#数组类型原子类" class="headerlink" title="数组类型原子类"></a>数组类型原子类</h3><p>使用原子的方式更新数组里的某个元素</p>
-<ul>
-<li>AtomicIntegerArray：整形数组原子类</li>
-<li>AtomicLongArray：长整形数组原子类</li>
-<li>AtomicReferenceArray ：引用类型数组原子类</li>
-</ul>
-<p>上面三个类提供的方法几乎相同，所以我们这里以 AtomicIntegerArray 为例子来介绍。</p>
-<p><strong>AtomicIntegerArray 类常用方法</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">get</span><span class="params">(<span class="keyword">int</span> i)</span> <span class="comment">//获取 index=i 位置元素的值</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndSet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> newValue)</span><span class="comment">//返回 index=i 位置的当前的值，并将其设置为新值：newValue</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndIncrement</span><span class="params">(<span class="keyword">int</span> i)</span><span class="comment">//获取 index=i 位置元素的值，并让该位置的元素自增</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndDecrement</span><span class="params">(<span class="keyword">int</span> i)</span> <span class="comment">//获取 index=i 位置元素的值，并让该位置的元素自减</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndAdd</span><span class="params">(<span class="keyword">int</span> delta)</span> <span class="comment">//获取 index=i 位置元素的值，并加上预期的值</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">int</span> expect, <span class="keyword">int</span> update)</span> <span class="comment">//如果输入的数值等于预期值，则以原子方式将 index=i 位置的元素值设置为输入值（update）</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lazySet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> newValue)</span><span class="comment">//最终 将index=i 位置的元素设置为newValue,使用 lazySet</span></span></span><br></pre></td></tr></table></figure>
-
-<h3 id="引用类型原子类"><a href="#引用类型原子类" class="headerlink" title="引用类型原子类"></a>引用类型原子类</h3><p>基本类型原子类只能更新一个变量，如果需要原子更新多个变量，需要使用 引用类型原子类。</p>
-<ul>
-<li>AtomicReference：引用类型原子类</li>
-<li>AtomicStampedReference：原子更新引用类型里的字段原子类</li>
-<li>AtomicMarkableReference ：原子更新带有标记位的引用类型</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1750,20 +1713,20 @@ Mysql中锁定 粒度最小 的一种锁，只针对当前操作的行进行加�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-count">32</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

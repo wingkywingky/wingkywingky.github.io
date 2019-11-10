@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.4.2',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="插入排序123456789101112131415161718private static void insertSort(int[] arr) &amp;#123;	&#x2F;&#x2F; TODO Auto-generated method stub		int i,j,temp;	for(i=1;i&amp;lt;arr.length;i++) &amp;#123;&#x2F;&#x2F;从第二个数往后遍历		temp=arr[i];&#x2F;&#x2F;暂存第i个元素">
+<meta name="keywords" content="算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="几种排序算法">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;11&#x2F;10&#x2F;%E5%87%A0%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95&#x2F;index.html">
+<meta property="og:site_name" content="Sagittarius">
+<meta property="og:description" content="插入排序123456789101112131415161718private static void insertSort(int[] arr) &amp;#123;	&#x2F;&#x2F; TODO Auto-generated method stub		int i,j,temp;	for(i=1;i&amp;lt;arr.length;i++) &amp;#123;&#x2F;&#x2F;从第二个数往后遍历		temp=arr[i];&#x2F;&#x2F;暂存第i个元素">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-11-10T08:37:29.903Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2019/11/10/%E5%87%A0%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>几种排序算法 | Sagittarius</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sagittarius</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/10/%E5%87%A0%E7%A7%8D%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wingkywingky">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sagittarius">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          几种排序算法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-10 16:23:42 / 修改时间：16:37:29" itemprop="dateCreated datePublished" datetime="2019-11-10T16:23:42+08:00">2019-11-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%89%8B%E6%92%95%E4%BB%A3%E7%A0%81/" itemprop="url" rel="index">
+                    <span itemprop="name">手撕代码</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">private static void insertSort(int[] arr) &#123;</span><br><span class="line">	// TODO Auto-generated method stub</span><br><span class="line">	</span><br><span class="line">	int i,j,temp;</span><br><span class="line">	for(i=1;i&lt;arr.length;i++) &#123;//从第二个数往后遍历</span><br><span class="line">		temp=arr[i];//暂存第i个元素</span><br><span class="line">		for(j=i-1;j&gt;=0;j--) &#123;//从i-1个元素往前遍历</span><br><span class="line">			if(temp&lt;=arr[j]) &#123;//temp&lt;=arr[j]时，元素后移一位</span><br><span class="line">				arr[j+1]=arr[j];</span><br><span class="line">			&#125;else &#123;</span><br><span class="line">				break;</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">		&#125;</span><br><span class="line">		arr[j+1]=temp;//插入</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>时间复杂度O(n^2)</li>
+<li>稳定排序</li>
+<li>使用于链式结构，也使用于数组</li>
+<li>适合初始基本有序的情况，当初始无序 N较大是不适用</li>
+</ol>
+<h3 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">private static void selectSort(int[] arr) &#123;</span><br><span class="line"></span><br><span class="line">	for (int i = 0; i &lt; arr.length - 1; i++) &#123;//选择一趟最小元素</span><br><span class="line">		int min = i;//把当前指向的第一个元素的下标存在min中</span><br><span class="line">		for (int j = i + 1; j &lt; arr.length - 1; j++) &#123;//遍历当前指向的第一个元素后面的元素</span><br><span class="line">			if (arr[j] &lt; arr[min]) &#123;//如果找到比第一个元素小的，把较小的元素下标存在min中</span><br><span class="line"></span><br><span class="line">				min = j;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		if (min != i) &#123;//如果min不等于开始存的第一个元素的下标，则把第一个元素与较小的元素做交换</span><br><span class="line">			int temp = arr[i];</span><br><span class="line">			arr[i] = arr[min];</span><br><span class="line">			arr[min] = temp;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p>时间复杂度O(n^2)</p>
+</li>
+<li><p>不稳定</p>
+</li>
+<li><p>使用于链式结构，也使用于数组</p>
+</li>
+</ol>
+<h3 id="冒泡排序"><a href="#冒泡排序" class="headerlink" title="冒泡排序"></a>冒泡排序</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">private static void bubbleSort(int[] arr) &#123;</span><br><span class="line">	</span><br><span class="line">	int n = arr.length-1;//取数组长度</span><br><span class="line">	</span><br><span class="line">	for(int i=0 ;i&lt;n;i++) &#123;//冒泡的趟数</span><br><span class="line">		boolean flag = false;//表示不发生交换</span><br><span class="line">		for(int j =0;j&lt;n-i;j++) &#123;//剩下的进行冒泡的元素</span><br><span class="line">			if(arr[j]&gt;arr[j+1]) &#123;//若该元素比下一个元素大则把交换标志置位true，交换两个数</span><br><span class="line">				flag = true;</span><br><span class="line">				int temp = arr[j];</span><br><span class="line">				arr[j] = arr[j+1];</span><br><span class="line">				arr[j+1] = temp;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		if(!flag) break;//没发生数据交换退出排序</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>时间复杂度O(n^2)</li>
+<li>不稳定</li>
+<li>使用于链式结构，也使用于数组</li>
+<li>N较大是不适用</li>
+</ol>
+<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">private static void quickSort(int[] arr, int low, int high) &#123;</span><br><span class="line">		if (low &lt; high) &#123;</span><br><span class="line">			int Index = getIndex(arr, low, high);//取得本次排序标记元素的索引</span><br><span class="line">			quickSort(arr, 0, Index - 1);//递归标记左边的子序列</span><br><span class="line">			quickSort(arr, Index + 1, high);//递归标记右边的子序列</span><br><span class="line"></span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	private static int getIndex(int[] arr, int low, int high) &#123;</span><br><span class="line"></span><br><span class="line">		int temp = arr[low];//用temp暂存第一个元素作为标记</span><br><span class="line">		while (low &lt; high) &#123;</span><br><span class="line">			while (low &lt; high &amp;&amp; arr[high] &gt;= temp) &#123;</span><br><span class="line">				high--;//当low指针小于high，而high指针指向的值有大于标记时，high指针往前移</span><br><span class="line">			&#125;</span><br><span class="line">			arr[low] = arr[high];//否则交换low指针和high指针指向的值</span><br><span class="line"></span><br><span class="line">			while (low &lt; high &amp;&amp; arr[low] &lt;= temp) &#123;</span><br><span class="line">				low++;//当low指针小于high，而low指针指向的值有小于标记时，low指针往后移</span><br><span class="line">			&#125;</span><br><span class="line">			arr[high] = arr[low];//否则交换low指针和high指针指向的值</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		arr[low] = temp;//最后low与high指针重合的所指向的索引就是标记元素所存放的地方</span><br><span class="line"></span><br><span class="line">		return low;//最后返回标记的索引位置</span><br><span class="line"></span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>时间复杂度O(nlog2n)</li>
+<li>不稳定</li>
+<li>当初始无序 N较大适用</li>
+</ol>
+<h3 id="归并排序"><a href="#归并排序" class="headerlink" title="归并排序"></a>归并排序</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">private static void mergeSort(int[] arr, int start, int end) &#123;</span><br><span class="line">		if (start &lt; end) &#123;//递归结束条件是切分到只剩一个元素</span><br><span class="line">			int mid = (start + end) / 2;</span><br><span class="line">			mergeSort(arr, start, mid);//对左边子序列进行切分</span><br><span class="line">			mergeSort(arr, mid + 1, end);//对右边子序列进行切分</span><br><span class="line">			merge(arr, start, mid, end);//合并</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	private static void merge(int[] arr, int start, int mid, int end) &#123;</span><br><span class="line">		int[] temp = new int[arr.length];//临时数组用来暂存排序后的数组</span><br><span class="line">		int p1 = start;//指向左边第一个元素</span><br><span class="line">		int p2 = mid + 1;//指向mid后边第一个元素</span><br><span class="line">		int k = start;</span><br><span class="line">		while (p1 &lt;= mid &amp;&amp; p2 &lt;= end) &#123;</span><br><span class="line">			if (arr[p1] &lt;= arr[p2]) &#123;//p1指向的值小于等于p2指向的值，则把p1存在temp数组里，继续向后遍历</span><br><span class="line">				temp[k] = arr[p1];</span><br><span class="line">				k++;</span><br><span class="line">				p1++;</span><br><span class="line">			&#125; else &#123;//同上</span><br><span class="line">				temp[k] = arr[p2];</span><br><span class="line">				k++;</span><br><span class="line">				p2++;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		while (p1 &lt;= mid) &#123;//左边子数组还没遍历完，把剩下的数放到temp里</span><br><span class="line">			temp[k] = arr[p1];</span><br><span class="line">			k++;</span><br><span class="line">			p1++;</span><br><span class="line">		&#125;</span><br><span class="line">		while (p2 &lt;= end) &#123;//同上</span><br><span class="line">			temp[k] = arr[p2];</span><br><span class="line">			k++;</span><br><span class="line">			p2++;</span><br><span class="line">		&#125;</span><br><span class="line">		for (int i = start; i &lt;= end; i++) &#123;//把temp数组逐一放到原数组中</span><br><span class="line">			arr[i] = temp[i];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>时间复杂度O(nlog2n)</li>
+<li>稳定</li>
+<li>使用于链式结构，也使用于数组</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%AE%97%E6%B3%95/" rel="tag"># 算法</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2019/11/05/%E4%BC%98%E5%8C%96/" rel="next" title="优化">
+                  <i class="fa fa-chevron-left"></i> 优化
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#插入排序"><span class="nav-number">1.</span> <span class="nav-text">插入排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#选择排序"><span class="nav-number">2.</span> <span class="nav-text">选择排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#冒泡排序"><span class="nav-number">3.</span> <span class="nav-text">冒泡排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#快速排序"><span class="nav-number">4.</span> <span class="nav-text">快速排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#归并排序"><span class="nav-number">5.</span> <span class="nav-text">归并排序</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <img class="site-author-image" itemprop="image" alt="wingkywingky"
+    src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">wingkywingky</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wingkywingky</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.0.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.4.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
