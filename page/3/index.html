@@ -180,6 +180,226 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/02/%E7%BA%BF%E7%A8%8B%E6%B1%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wingkywingky">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sagittarius">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/02/%E7%BA%BF%E7%A8%8B%E6%B1%A0/" class="post-title-link" itemprop="url">线程池</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-02 22:02:34 / 修改时间：23:03:00" itemprop="dateCreated datePublished" datetime="2019-11-02T22:02:34+08:00">2019-11-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA多线程</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="线程池的作用"><a href="#线程池的作用" class="headerlink" title="线程池的作用"></a>线程池的作用</h3><ul>
+<li><p><strong>降低资源消耗。</strong> 通过重复利用已创建的线程降低线程创建和销毁造成的消耗。</p>
+</li>
+<li><p><strong>提高响应速度。</strong> 当任务到达时，任务可以不需要的等到线程创建就能立即执行。</p>
+</li>
+<li><p><strong>提高线程的可管理性。</strong> 线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控</p>
+</li>
+</ul>
+<h3 id="实现Runnable接口和Callable接口的区别"><a href="#实现Runnable接口和Callable接口的区别" class="headerlink" title="实现Runnable接口和Callable接口的区别"></a>实现Runnable接口和Callable接口的区别</h3><p>如果想让线程池执行任务的话需要实现的Runnable接口或Callable接口。  Runnable接口或Callable接口实现类都可以被ThreadPoolExecutor或ScheduledThreadPoolExecutor执行。两者的区别在于  Runnable 接口不会返回结果但是 Callable 接口可以返回结果。</p>
+<p>  <strong>备注：</strong> 工具类<code>Executors</code>可以实现<code>Runnable</code>对象和<code>Callable</code>对象之间的相互转换。（<code>Executors.callable（Runnable task）</code>或<code>Executors.callable（Runnable task，Object resule）</code>）</p>
+<h3 id="执行excute-方法和submit-方法的区别"><a href="#执行excute-方法和submit-方法的区别" class="headerlink" title="执行excute()方法和submit()方法的区别"></a>执行excute()方法和submit()方法的区别</h3><ol>
+<li><p><strong>execute() 方法用于提交不需要返回值的任务，所以无法判断任务是否被线程池执行成功与否；</strong></p>
+</li>
+<li><p><strong>submit() 方法用于提交需要返回值的任务。线程池会返回一个Future类型的对象，通过这个Future对象可以判断任务是否执行成功</strong>，并且可以通过future的get()方法来获取返回值，get()方法会阻塞当前线程直到任务完成，而使用 <code>get（long timeout，TimeUnit unit）</code>方法则会阻塞当前线程一段时间后立即返回，这时候有可能任务没有执行完。</p>
+</li>
+</ol>
+<h3 id="创建线程池的方式"><a href="#创建线程池的方式" class="headerlink" title="创建线程池的方式"></a>创建线程池的方式</h3><p>Java中创建线程池有以下的方式，</p>
+<p><strong>1、使用ThreadPoolExecutor类</strong></p>
+<p>  查看JDK的源码，ThreadPoolExecutor类提供了以下构造方法，</p>
+<p><img src="https://img2018.cnblogs.com/blog/985599/201905/985599-20190521223219490-1599121435.png" alt="img"></p>
+<p><strong>2、使用Executors类</strong></p>
+<p>Executors类提供了下面的构造方法，</p>
+<p><img src="https://img2018.cnblogs.com/blog/985599/201905/985599-20190521225958821-275322901.png" alt="img"></p>
+<h3 id="线程池的种类"><a href="#线程池的种类" class="headerlink" title="线程池的种类"></a>线程池的种类</h3><ol>
+<li><strong>Single Thread Exector ：</strong></li>
+</ol>
+<p>　　只有一个线程的线程池，因此所有提交的任务是顺序执行，关键代码：Executors.newSingleThreadExecutor();</p>
+<ol start="2">
+<li><strong>Cached Thread Pool :</strong></li>
+</ol>
+<p>​       创建一个可缓存线程池，如果线程池长度超过处理需要，可灵活回收空闲线程，若无可回收，则新建线程。</p>
+<p>​       这种类型的线程池特点是：</p>
+<p>　　a 工作线程的创建数量几乎没有限制(其实也有限制的,数目为Interger. MAX_VALUE), 这样可灵活的往线程池中添加线程。</p>
+<p>　　b 如果长时间没有往线程池中提交任务，即如果工作线程空闲了指定的时间(默认为1分钟)，则该工作线程将自动终止。终止后，如果你又提交了新的任务，则线程池重新创建一个工作线程。</p>
+<p>　　c 在使用CachedThreadPool时，一定要注意控制任务的数量，否则，由于大量线程同时运行，很有会造成系统瘫痪。</p>
+<p>​       关键代码：Executors.newCachedThreadPool();</p>
+<ol start="3">
+<li><strong>Fixed ThreadPool :</strong></li>
+</ol>
+<p>　　创建一个指定工作线程数量的线程池。每当提交一个任务就创建一个工作线程，如果工作线程数量达到线程池初始的最大数，则将提交的任务存入到池队列中。</p>
+<p>　　FixedThreadPool是一个典型且优秀的线程池，它具有线程池提高程序效率和节省创建线程时所耗的开销的优点。</p>
+<p>　　但是，在线程池空闲时，即线程池中没有可运行任务时，它不会释放工作线程，还会占用一定的系统资源。</p>
+<p>　　关键代码：Executors.newFixedThreadPool(3);在构造函数中的参数3是线程池的大小，可以随意设置，也可以和cpu的数量保持一致，</p>
+<p>​                          获取cpu的数量 int cpuNums=Runtime.getRuntime.avaliableProcessors();</p>
+<ol start="4">
+<li><strong>Scheduled Thread Pool:</strong></li>
+</ol>
+<p>　  用来调度即将执行的任务的线程池，支持定时及周期性任务执行。</p>
+<p>　 关键代码：Executors.newScheduledThreadPool();</p>
+<ol start="5">
+<li><strong>. Sinle Scheduled Thread Pool:</strong></li>
+</ol>
+<p>　　只有一个线程，用来调度任务在指定时间执行，</p>
+<p>　　关键代码： Executors.newSingleThreadExecutor();；</p>
+<h3 id="线程池的执行流程"><a href="#线程池的执行流程" class="headerlink" title="线程池的执行流程"></a>线程池的执行流程</h3><p>提交一个任务到线程池中，线程池的处理流程如下：</p>
+<p>1、判断线程池里的核心线程是否都在执行任务，如果不是（核心线程空闲或者还有核心线程没有被创建）则创建一个新的工作线程来执行任务。如果核心线程都在执行任务，则进入下个流程。</p>
+<p>2、线程池判断工作队列是否已满，如果工作队列没有满，则将新提交的任务存储在这个工作队列里。如果工作队列满了，则进入下个流程。</p>
+<p>3、判断线程池里的线程是否都处于工作状态，如果没有，则创建一个新的工作线程来执行任务。如果已经满了，则交给饱和策略来处理这个任务。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3096083-2286629fbc77d3b5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/708" alt="https://upload-images.jianshu.io/upload_images/3096083-2286629fbc77d3b5.png?imageMogr2/auto-orient/strip|imageView2/2/w/708"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/02/ThreadLocal/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wingkywingky">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sagittarius">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/02/ThreadLocal/" class="post-title-link" itemprop="url">ThreadLocal</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-02 21:41:24 / 修改时间：22:02:00" itemprop="dateCreated datePublished" datetime="2019-11-02T21:41:24+08:00">2019-11-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA多线程</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="ThreadLocal简介"><a href="#ThreadLocal简介" class="headerlink" title="ThreadLocal简介"></a>ThreadLocal简介</h3><p>通常情况下，我们创建的变量是可以被任何一个线程访问并修改的。<strong>如果想实现每一个线程都有自己的专属本地变量该如何解决呢？</strong> JDK中提供的<code>ThreadLocal</code>类正是为了解决这样的问题。 <strong>ThreadLocal类主要解决的就是让每个线程绑定自己的值，可以将ThreadLocal类形象的比喻成存放数据的盒子，盒子中可以存储每个线程的私有数据。</strong></p>
+<p><strong>如果你创建了一个ThreadLocal变量，那么访问这个变量的每个线程都会有这个变量的本地副本，这也是ThreadLocal变量名的由来。他们可以使用 get（） 和 set（） 方法来获取默认值或将其值更改为当前线程所存的副本的值，从而避免了线程安全问题。</strong></p>
+<p>再举个简单的例子： </p>
+<p>比如有两个人去宝屋收集宝物，这两个共用一个袋子的话肯定会产生争执，但是给他们两个人每个人分配一个袋子的话就不会出现这样的问题。如果把这两个人比作线程的话，那么ThreadLocal就是用来避免这两个线程竞争的。</p>
+<h3 id="ThreadLocal原理"><a href="#ThreadLocal原理" class="headerlink" title="ThreadLocal原理"></a>ThreadLocal原理</h3><p>从 <code>Thread</code>类源代码入手。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Thread</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line"> ......</span><br><span class="line"><span class="comment">//与此线程有关的ThreadLocal值。由ThreadLocal类维护</span></span><br><span class="line">ThreadLocal.ThreadLocalMap threadLocals = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//与此线程有关的InheritableThreadLocal值。由InheritableThreadLocal类维护</span></span><br><span class="line">ThreadLocal.ThreadLocalMap inheritableThreadLocals = <span class="keyword">null</span>;</span><br><span class="line"> ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从上面<code>Thread</code>类 源代码可以看出<code>Thread</code> 类中有一个 <code>threadLocals</code> 和 一个  <code>inheritableThreadLocals</code> 变量，它们都是 <code>ThreadLocalMap</code>  类型的变量,我们可以把 <code>ThreadLocalMap</code>  理解为<code>ThreadLocal</code> 类实现的定制化的 <code>HashMap</code>。默认情况下这两个变量都是null，只有当前线程调用 <code>ThreadLocal</code> 类的 <code>set</code>或<code>get</code>方法时才创建它们，实际上调用这两个方法的时候，我们调用的是<code>ThreadLocalMap</code>类对应的 <code>get()</code>、<code>set()</code>方法。</p>
+<p><code>ThreadLocal</code>类的<code>set()</code>方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">        map.set(<span class="keyword">this</span>, value);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">ThreadLocalMap <span class="title">getMap</span><span class="params">(Thread t)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> t.threadLocals;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过上面这些内容，我们足以通过猜测得出结论：<strong>最终的变量是放在了当前线程的 ThreadLocalMap 中，并不是存在 ThreadLocal 上，ThreadLocal 可以理解为只是ThreadLocalMap的封装，传递了变量值。</strong> <code>ThrealLocal</code> 类中可以通过<code>Thread.currentThread()</code>获取到当前线程对象后，直接通过<code>getMap(Thread t)</code>可以访问到该线程的<code>ThreadLocalMap</code>对象。</p>
+<p><strong>每个Thread中都具备一个ThreadLocalMap，而ThreadLocalMap可以存储以ThreadLocal为key的键值对。</strong> 比如我们在同一个线程中声明了两个 <code>ThreadLocal</code> 对象的话，会使用 <code>Thread</code>内部都是使用仅有那个<code>ThreadLocalMap</code> 存放数据的，<code>ThreadLocalMap</code>的 key 就是 <code>ThreadLocal</code>对象，value 就是 <code>ThreadLocal</code> 对象调用<code>set</code>方法设置的值。<code>ThreadLocal</code> 是 map结构是为了让每个线程可以关联多个 <code>ThreadLocal</code>变量。这也就解释了 ThreadLocal 声明的变量为什么在每一个线程都有自己的专属本地变量。</p>
+<p><code>ThreadLocalMap</code>是<code>ThreadLocal</code>的静态内部类。</p>
+<p><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-6/ThreadLocal%E5%86%85%E9%83%A8%E7%B1%BB.png" alt="ThreadLocal内部类"></p>
+<h3 id="ThreadLocal内存泄露问题"><a href="#ThreadLocal内存泄露问题" class="headerlink" title="ThreadLocal内存泄露问题"></a>ThreadLocal内存泄露问题</h3><p><code>ThreadLocalMap</code> 中使用的 key 为 <code>ThreadLocal</code> 的弱引用,而 value 是强引用。所以，如果 <code>ThreadLocal</code> 没有被外部强引用的情况下，在垃圾回收的时候，key 会被清理掉，而 value 不会被清理掉。这样一来，<code>ThreadLocalMap</code> 中就会出现key为null的Entry。假如我们不做任何措施的话，value 永远无法被GC 回收，这个时候就可能会产生内存泄露。ThreadLocalMap实现中已经考虑了这种情况，在调用 <code>set()</code>、<code>get()</code>、<code>remove()</code> 方法的时候，会清理掉 key 为 null 的记录。使用完 <code>ThreadLocal</code>方法后 最好手动调用<code>remove()</code>方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span> <span class="keyword">extends</span> <span class="title">WeakReference</span>&lt;<span class="title">ThreadLocal</span>&lt;?&gt;&gt; </span>&#123;</span><br><span class="line">      <span class="comment">/** The value associated with this ThreadLocal. */</span></span><br><span class="line">      Object value;</span><br><span class="line"></span><br><span class="line">      Entry(ThreadLocal&lt;?&gt; k, Object v) &#123;</span><br><span class="line">          <span class="keyword">super</span>(k);</span><br><span class="line">          value = v;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>弱引用介绍：</strong></p>
+<blockquote>
+<p>如果一个对象只具有弱引用，那就类似于<strong>可有可无的生活用品</strong>。弱引用与软引用的区别在于：只具有弱引用的对象拥有更短暂的生命周期。在垃圾回收器线程扫描它   所管辖的内存区域的过程中，一旦发现了只具有弱引用的对象，不管当前内存空间足够与否，都会回收它的内存。不过，由于垃圾回收器是一个优先级很低的线程，  因此不一定会很快发现那些只具有弱引用的对象。</p>
+<p>弱引用可以和一个引用队列（ReferenceQueue）联合使用，如果弱引用所引用的对象被垃圾回收，Java虚拟机就会把这个弱引用加入到与之关联的引用队列中。</p>
+</blockquote>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/01/volatile%E5%85%B3%E9%94%AE%E5%AD%97/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1140,183 +1360,6 @@ public static void main(String[] args) {
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/31/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="wingkywingky">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sagittarius">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/10/31/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" class="post-title-link" itemprop="url">Linux常用命令</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-10-31 00:14:06 / 修改时间：00:15:49" itemprop="dateCreated datePublished" datetime="2019-10-31T00:14:06+08:00">2019-10-31</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index">
-                    <span itemprop="name">操作系统</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><strong>常用的命令，比如 cat 文件内容查看、find 搜索文件，以及 cut、sort 等管线命令。了解 grep 和 awk 的作用。</strong></p>
-<p>man:查看帮助文件</p>
-<p>ls：显示文件信息命令</p>
-<p>ls-l:显示文件或目录下的详细信息</p>
-<p>ls-l c*：所有以c开头的文件</p>
-<p>pwd:显示用户当前工作目录</p>
-<p>cd：切换目录</p>
-<p>mkdir:创建目录</p>
-<p>rmdir:删除目录</p>
-<p>rm:删除工具</p>
-<p>rm –f 文件名 :不显示警告信息直接删除</p>
-<p>rm –i 文件名 ：显示警告信息是否删除</p>
-<p>rm –r 文件名 ：递归删除</p>
-<p>mv  原文件或目录 新文件或目录：更改文件名或移动文件</p>
-<p>cp:  文件复制</p>
-<p>cat : 显示文件内容 </p>
-<p>grep:在文件里查找指定字符</p>
-<p>shutdown：关机</p>
-<p>who：当前用户情况</p>
-<p>chmod:文件权限修改</p>
-<p>chowm:修改文件拥有者</p>
-<p>ps:查看正在执行的进程</p>
-<p>kill:向正在执行的进程发送指点的信号</p>
-<p>find /etc/ -name passwd      ##查找/etc/下名称中带有passwd的文件</p>
-<p>cut命令用于显示每行从开头算起 num1 到 num2 的文字。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/30/%E9%81%93%E4%B8%80%EF%BC%88%E5%AE%9E%E4%B9%A0%E9%9D%A2%E7%BB%8F%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="wingkywingky">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sagittarius">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/10/30/%E9%81%93%E4%B8%80%EF%BC%88%E5%AE%9E%E4%B9%A0%E9%9D%A2%E7%BB%8F%EF%BC%89/" class="post-title-link" itemprop="url">道一（实习面经）</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-10-30 23:40:36 / 修改时间：23:43:08" itemprop="dateCreated datePublished" datetime="2019-10-30T23:40:36+08:00">2019-10-30</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index">
-                    <span itemprop="name">面试相关</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="道一"><a href="#道一" class="headerlink" title="道一"></a><strong>道一</strong></h3><p>说下对多线程的了解</p>
-<p>Synchronize有几种实现呢</p>
-<p>什么是可重入锁</p>
-<p>如何解决重复消费的问题（数据库层面，web层面）</p>
-<p>如何解决多机部署中map标志不一致的问题（zookeeper解决）</p>
-<p>乐观锁与悲观锁</p>
-<p>数据库如何保证记录的幂等性</p>
-<p>Redis用来干什么</p>
-<p>RabbitMq用来干什么</p>
-<p>Spring的AOP和IOC</p>
-<p>Spring的事务用到哪个特性</p>
-<p>MYSQL怎么检查SQL语句的执行效率</p>
-<p>如何优化SQL语句</p>
-<p>知道哪些索引</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1367,20 +1410,20 @@ public static void main(String[] args) {
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-count">39</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1405,7 +1448,7 @@ public static void main(String[] args) {
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

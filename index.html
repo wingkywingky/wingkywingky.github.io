@@ -180,6 +180,302 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/09/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wingkywingky">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sagittarius">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/09/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">工厂模式</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-03-09 16:05:38 / 修改时间：16:06:56" itemprop="dateCreated datePublished" datetime="2020-03-09T16:05:38+08:00">2020-03-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>工厂顾名思义就是创建产品，根据产品是具体产品还是具体工厂可分为简单工厂模式和工厂方法模式，根据工厂的抽象程度可分为工厂方法模式和抽象工厂模式。该模式用于封装和管理对象的创建，是一种创建型模式。本文从一个具体的例子逐步深入分析，来体会三种工厂模式的应用场景和利弊。</p>
+<h3 id="1-简单工厂模式"><a href="#1-简单工厂模式" class="headerlink" title="1. 简单工厂模式"></a>1. 简单工厂模式</h3><p>该模式对对象创建管理方式最为简单，因为其仅仅简单的对不同类对象的创建进行了一层薄薄的封装。该模式通过向工厂传递类型来指定要创建的对象，其UML类图如下：</p>
+<p><img src="https://img2018.cnblogs.com/blog/1419489/201906/1419489-20190628144601084-563759643.png" alt="img"></p>
+<p>下面我们使用手机生产来讲解该模式：</p>
+<p><strong>Phone类</strong>：手机标准规范类(AbstractProduct)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface Phone &#123;</span><br><span class="line">    void make();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>  <strong>MiPhone类</strong>：制造小米手机（Product1）</p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class MiPhone implements Phone &#123;</span><br><span class="line">    public MiPhone() &#123;</span><br><span class="line">        this.make();</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public void make() &#123;</span><br><span class="line">        // TODO Auto-generated method stub</span><br><span class="line">        System.out.println(&quot;make xiaomi phone!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<p><strong>IPhone类</strong>：制造苹果手机（Product2）</p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class IPhone implements Phone &#123;</span><br><span class="line">    public IPhone() &#123;</span><br><span class="line">        this.make();</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public void make() &#123;</span><br><span class="line">        // TODO Auto-generated method stub</span><br><span class="line">        System.out.println(&quot;make iphone!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<p><strong>PhoneFactory类</strong>：手机代工厂（Factory）</p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class PhoneFactory &#123;</span><br><span class="line">    public Phone makePhone(String phoneType) &#123;</span><br><span class="line">        if(phoneType.equalsIgnoreCase(&quot;MiPhone&quot;))&#123;</span><br><span class="line">            return new MiPhone();</span><br><span class="line">        &#125;</span><br><span class="line">        else if(phoneType.equalsIgnoreCase(&quot;iPhone&quot;)) &#123;</span><br><span class="line">            return new IPhone();</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<p> <strong>演示：</strong></p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class Demo &#123;</span><br><span class="line">    public static void main(String[] arg) &#123;</span><br><span class="line">        PhoneFactory factory = new PhoneFactory();</span><br><span class="line">        Phone miPhone = factory.makePhone(&quot;MiPhone&quot;);            // make xiaomi phone!</span><br><span class="line">        IPhone iPhone = (IPhone)factory.makePhone(&quot;iPhone&quot;);    // make iphone!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<h3 id="2-工厂方法模式-Factory-Method"><a href="#2-工厂方法模式-Factory-Method" class="headerlink" title="2. 工厂方法模式(Factory Method)"></a>2. 工厂方法模式(Factory Method)</h3><p>和简单工厂模式中工厂负责生产所有产品相比，工厂方法模式将生成具体产品的任务分发给具体的产品工厂，其UML类图如下：</p>
+<p><img src="https://img2018.cnblogs.com/blog/1419489/201906/1419489-20190628154133368-906051111.png" alt="img"></p>
+<p>也就是定义一个抽象工厂，其定义了产品的生产接口，但不负责具体的产品，将生产任务交给不同的派生类工厂。这样不用通过指定类型来创建对象了。</p>
+<p>接下来继续使用生产手机的例子来讲解该模式。</p>
+<p>其中和产品相关的Phone类、MiPhone类和IPhone类的定义不变。</p>
+<p><strong>AbstractFactory类</strong>：生产不同产品的工厂的抽象类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface AbstractFactory &#123;</span><br><span class="line">    Phone makePhone();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>XiaoMiFactory类</strong>：生产小米手机的工厂（ConcreteFactory1）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class XiaoMiFactory implements AbstractFactory&#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Phone makePhone() &#123;</span><br><span class="line">        return new MiPhone();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>AppleFactory类</strong>：生产苹果手机的工厂（ConcreteFactory2）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class AppleFactory implements AbstractFactory &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Phone makePhone() &#123;</span><br><span class="line">        return new IPhone();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>演示：</strong></p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public class Demo &#123;</span><br><span class="line">    public static void main(String[] arg) &#123;</span><br><span class="line">        AbstractFactory miFactory = new XiaoMiFactory();</span><br><span class="line">        AbstractFactory appleFactory = new AppleFactory();</span><br><span class="line">        miFactory.makePhone();            // make xiaomi phone!</span><br><span class="line">        appleFactory.makePhone();        // make iphone!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<h3 id="3-抽象工厂模式-Abstract-Factory"><a href="#3-抽象工厂模式-Abstract-Factory" class="headerlink" title="3. 抽象工厂模式(Abstract Factory)"></a>3. 抽象工厂模式(Abstract Factory)</h3><p>上面两种模式不管工厂怎么拆分抽象，都只是针对一类产品<strong>Phone</strong>（AbstractProduct），如果要生成另一种产品PC，应该怎么表示呢？</p>
+<p>最简单的方式是把2中介绍的工厂方法模式完全复制一份，不过这次生产的是PC。但同时也就意味着我们要完全复制和修改Phone生产管理的所有代码，显然这是一个笨办法，并不利于扩展和维护。</p>
+<p>抽象工厂模式通过在AbstarctFactory中增加创建产品的接口，并在具体子工厂中实现新加产品的创建，当然前提是子工厂支持生产该产品。否则继承的这个接口可以什么也不干。</p>
+<p>其UML类图如下：</p>
+<p><img src="https://img2018.cnblogs.com/blog/1419489/201906/1419489-20190628170705865-1781414242.png" alt="img"></p>
+<p>从上面类图结构中可以清楚的看到如何在工厂方法模式中通过增加新产品接口来实现产品的增加的。</p>
+<p>接下来我们继续通过小米和苹果产品生产的例子来解释该模式。</p>
+<p>为了弄清楚上面的结构，我们使用具体的产品和工厂来表示上面的UML类图，能更加清晰的看出模式是如何演变的：</p>
+<p><img src="https://img2018.cnblogs.com/blog/1419489/201906/1419489-20190628164001258-637961514.png" alt="img"></p>
+<p><strong>PC类</strong>：定义PC产品的接口(AbstractPC)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface PC &#123;</span><br><span class="line">    void make();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>MiPC类</strong>：定义小米电脑产品(MIPC)</p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class MiPC implements PC &#123;</span><br><span class="line">    public MiPC() &#123;</span><br><span class="line">        this.make();</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public void make() &#123;</span><br><span class="line">        // TODO Auto-generated method stub</span><br><span class="line">        System.out.println(&quot;make xiaomi PC!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<p><strong>MAC类</strong>：定义苹果电脑产品(MAC)</p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class MAC implements PC &#123;</span><br><span class="line">    public MAC() &#123;</span><br><span class="line">        this.make();</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public void make() &#123;</span><br><span class="line">        // TODO Auto-generated method stub</span><br><span class="line">        System.out.println(&quot;make MAC!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<p>下面需要修改工厂相关的类的定义：</p>
+<p><strong>AbstractFactory类</strong>：增加PC产品制造接口</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface AbstractFactory &#123;</span><br><span class="line">    Phone makePhone();</span><br><span class="line">    PC makePC();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>XiaoMiFactory类</strong>：增加小米PC的制造（ConcreteFactory1）</p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class XiaoMiFactory implements AbstractFactory&#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Phone makePhone() &#123;</span><br><span class="line">        return new MiPhone();</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public PC makePC() &#123;</span><br><span class="line">        return new MiPC();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<p><strong>AppleFactory类</strong>：增加苹果PC的制造（ConcreteFactory2）</p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class AppleFactory implements AbstractFactory &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Phone makePhone() &#123;</span><br><span class="line">        return new IPhone();</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public PC makePC() &#123;</span><br><span class="line">        return new MAC();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<p><strong>演示：</strong></p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class Demo &#123;</span><br><span class="line">    public static void main(String[] arg) &#123;</span><br><span class="line">        AbstractFactory miFactory = new XiaoMiFactory();</span><br><span class="line">        AbstractFactory appleFactory = new AppleFactory();</span><br><span class="line">        miFactory.makePhone();            // make xiaomi phone!</span><br><span class="line">        miFactory.makePC();                // make xiaomi PC!</span><br><span class="line">        appleFactory.makePhone();        // make iphone!</span><br><span class="line">        appleFactory.makePC();            // make MAC!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>上面介绍的三种工厂模式有各自的应用场景，实际应用时能解决问题满足需求即可，可灵活变通，无所谓高级与低级。</p>
+<p>此外无论哪种模式，由于可能封装了大量对象和工厂创建，新加产品需要修改已定义好的工厂相关的类，因此对于产品和工厂的扩展不太友好，利弊需要权衡一下。 </p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/09/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wingkywingky">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sagittarius">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/09/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">单例模式</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-03-09 15:59:33 / 修改时间：16:05:10" itemprop="dateCreated datePublished" datetime="2020-03-09T15:59:33+08:00">2020-03-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="一、什么是单例模式"><a href="#一、什么是单例模式" class="headerlink" title="一、什么是单例模式"></a>一、什么是单例模式</h2><p>单例模式是一种常用的软件设计模式，其定义是单例对象的类只能允许一个实例存在。</p>
+<p>许多时候整个系统只需要拥有一个的全局对象，这样有利于我们协调系统整体的行为。比如在某个服务器程序中，该服务器的配置信息存放在一个文件中，这些配置数据由一个单例对象统一读取，然后服务进程中的其他对象再通过这个单例对象获取这些配置信息。这种方式简化了在复杂环境下的配置管理。</p>
+<p><img src="https://images2018.cnblogs.com/blog/1002892/201809/1002892-20180912131026735-781767905.png" alt="img"></p>
+<p><strong>单例的实现主要是通过以下两个步骤</strong>：</p>
+<ol>
+<li>将该类的构造方法定义为私有方法，这样其他处的代码就无法通过调用该类的构造方法来实例化该类的对象，只有通过该类提供的静态方法来得到该类的唯一实例；</li>
+<li>在该类内提供一个静态方法，当我们调用这个方法时，如果类持有的引用不为空就返回这个引用，如果类保持的引用为空就创建该类的实例并将实例的引用赋予该类保持的引用。</li>
+<li></li>
+</ol>
+<h2 id="二、单例模式的应用场景"><a href="#二、单例模式的应用场景" class="headerlink" title="二、单例模式的应用场景"></a>二、单例模式的应用场景</h2><p>  举一个小例子，在我们的windows桌面上，我们打开了一个回收站，当我们试图再次打开一个新的回收站时，Windows系统并不会为你弹出一个新的回收站窗口。，也就是说在整个系统运行的过程中，系统只维护一个回收站的实例。这就是一个典型的单例模式运用。</p>
+<p>   继续说回收站，我们在实际使用中并不存在需要同时打开两个回收站窗口的必要性。假如我每次创建回收站时都需要消耗大量的资源，而每个回收站之间资源是共享的，那么在没有必要多次重复创建该实例的情况下，创建了多个实例，这样做就会给系统造成不必要的负担，造成资源浪费。</p>
+<p>   再举一个例子，网站的计数器，一般也是采用单例模式实现，如果你存在多个计数器，每一个用户的访问都刷新计数器的值，这样的话你的实计数的值是难以同步的。但是如果采用单例模式实现就不会存在这样的问题，而且还可以避免线程安全问题。同样多线程的线程池的设计一般也是采用单例模式，这是由于线程池需要方便对池中的线程进行控制</p>
+<p>  同样，对于一些应用程序的日志应用，或者web开发中读取配置文件都适合使用单例模式，如HttpApplication 就是单例的典型应用。</p>
+<p>  从上述的例子中我们可以总结出适合使用单例模式的场景和优缺点：  </p>
+<p>   <strong>适用场景：</strong> </p>
+<ul>
+<li><strong>1.需要生成唯一序列的环境</strong></li>
+<li><strong>2.需要频繁实例化然后销毁的对象。</strong></li>
+<li><strong>3.创建对象时耗时过多或者耗资源过多，但又经常用到的对象。</strong> </li>
+<li><strong>4.方便资源相互通信的环境</strong></li>
+</ul>
+<h2 id="三、单例模式的优缺点"><a href="#三、单例模式的优缺点" class="headerlink" title="三、单例模式的优缺点"></a>三、单例模式的优缺点</h2><p><strong>优点</strong>：</p>
+<ul>
+<li>在内存中只有一个对象，节省内存空间；</li>
+<li>避免频繁的创建销毁对象，可以提高性能；</li>
+<li>避免对共享资源的多重占用，简化访问；</li>
+<li>为整个系统提供一个全局访问点。</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>不适用于变化频繁的对象；</li>
+<li>滥用单例将带来一些负面问题，如为了节省资源将数据库连接池对象设计为的单例类，可能会导致共享连接池对象的程序过多而出现连接池溢出；</li>
+<li>如果实例化的对象长时间不被利用，系统会认为该对象是垃圾而被回收，这可能会导致对象状态的丢失；</li>
+</ul>
+<p><a href="https://www.cnblogs.com/xuwendong/p/9633985.html#_labelTop" target="_blank" rel="noopener">回到顶部</a></p>
+<h2 id="四、单例模式的实现"><a href="#四、单例模式的实现" class="headerlink" title="四、单例模式的实现"></a>四、单例模式的实现</h2><h4 id="1-饿汉式"><a href="#1-饿汉式" class="headerlink" title="1.饿汉式"></a><strong>1.饿汉式</strong></h4><p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// 饿汉式单例</span><br><span class="line">public class Singleton1 &#123;</span><br><span class="line"> </span><br><span class="line">    // 指向自己实例的私有静态引用，主动创建</span><br><span class="line">    private static Singleton1 singleton1 = new Singleton1();</span><br><span class="line"> </span><br><span class="line">    // 私有的构造方法</span><br><span class="line">    private Singleton1()&#123;&#125;</span><br><span class="line"> </span><br><span class="line">    // 以自己实例为返回值的静态的公有方法，静态工厂方法</span><br><span class="line">    public static Singleton1 getSingleton1()&#123;</span><br><span class="line">        return singleton1;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<p>我们知道，<strong>类加载的方式是按需加载，且加载一次</strong>。。因此，在上述单例类被加载时，就会实例化一个对象并交给自己的引用，供系统使用；而且，由于这个类在整个生命周期中只会被加载一次，因此只会创建一个实例，即能够充分保证单例。</p>
+<p>优点：这种写法比较简单，就是在类装载的时候就完成实例化。避免了线程同步问题。</p>
+<p>缺点：在类装载的时候就完成实例化，没有达到Lazy Loading的效果。如果从始至终从未使用过这个实例，则会造成内存的浪费。</p>
+<h4 id="2-懒汉式"><a href="#2-懒汉式" class="headerlink" title="2.懒汉式"></a><strong>2.懒汉式</strong></h4><p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">// 懒汉式单例</span><br><span class="line">public class Singleton2 &#123;</span><br><span class="line"> </span><br><span class="line">    // 指向自己实例的私有静态引用</span><br><span class="line">    private static Singleton2 singleton2;</span><br><span class="line"> </span><br><span class="line">    // 私有的构造方法</span><br><span class="line">    private Singleton2()&#123;&#125;</span><br><span class="line"> </span><br><span class="line">    // 以自己实例为返回值的静态的公有方法，静态工厂方法</span><br><span class="line">    public static Singleton2 getSingleton2()&#123;</span><br><span class="line">        // 被动创建，在真正需要使用时才去创建</span><br><span class="line">        if (singleton2 == null) &#123;</span><br><span class="line">            singleton2 = new Singleton2();</span><br><span class="line">        &#125;</span><br><span class="line">        return singleton2;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<p>我们从懒汉式单例可以看到，单例实例被<strong>延迟加载</strong>，即只有在真正使用的时候才会实例化一个对象并交给自己的引用。</p>
+<p>这种写法起到了Lazy Loading的效果，但是只能在单线程下使用。如果在多线程下，一个线程进入了if (singleton ==  null)判断语句块，还未来得及往下执行，另一个线程也通过了这个判断语句，这时便会产生多个实例。所以在多线程环境下不可使用这种方式。</p>
+<h4 id="3-双重加锁机制"><a href="#3-双重加锁机制" class="headerlink" title="3.双重加锁机制"></a><strong>3.双重加锁机制</strong></h4><p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public class Singleton</span><br><span class="line">    &#123;</span><br><span class="line">        private static Singleton instance;</span><br><span class="line">        //程序运行时创建一个静态只读的进程辅助对象</span><br><span class="line">        private static readonly object syncRoot = new object();</span><br><span class="line">        private Singleton() &#123; &#125;</span><br><span class="line">        public static Singleton GetInstance()</span><br><span class="line">        &#123;</span><br><span class="line">            //先判断是否存在，不存在再加锁处理</span><br><span class="line">            if (instance == null)</span><br><span class="line">            &#123;</span><br><span class="line">                //在同一个时刻加了锁的那部分程序只有一个线程可以进入</span><br><span class="line">                lock (syncRoot)</span><br><span class="line">                &#123;</span><br><span class="line">                    if (instance == null)</span><br><span class="line">                    &#123;</span><br><span class="line">                        instance = new Singleton();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            return instance;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<p>Double-Check概念对于多线程开发者来说不会陌生，如代码中所示，我们进行了两次if (singleton ==  null)检查，这样就可以保证线程安全了。这样，实例化代码只用执行一次，后面再次访问时，判断if (singleton ==  null)，直接return实例化对象。</p>
+<p>使用双重检测同步延迟加载去创建单例的做法是一个非常优秀的做法，<strong>其不但保证了单例，而且切实提高了程序运行效率</strong></p>
+<p>优点：线程安全；延迟加载；效率较高。</p>
+<h4 id="4-静态初始化"><a href="#4-静态初始化" class="headerlink" title="4.静态初始化"></a><strong>4.静态初始化</strong></h4><p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">//阻止发生派生，而派生可能会增加实例</span><br><span class="line">    public sealed class Singleton</span><br><span class="line">    &#123;</span><br><span class="line">        //在第一次引用类的任何成员时创建实例，公共语言运行库负责处理变量初始化</span><br><span class="line">        private static readonly Singleton instance=new Singleton();</span><br><span class="line">        </span><br><span class="line">        private Singleton() &#123; &#125;</span><br><span class="line">        public static Singleton GetInstance()</span><br><span class="line">        &#123;</span><br><span class="line">            return instance;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<p>在实际应用中，C#与公共语言运行库也提供了一种“静态初始化”方法，这种方法不需要开发人员显式地编写线程安全代码，即可解决多线程环境下它是不安全的问题。</p>
+<h4 id><a href="#" class="headerlink" title></a></h4><h4 id="5-静态内部类单例模式"><a href="#5-静态内部类单例模式" class="headerlink" title="5.静态内部类单例模式"></a><strong>5.静态内部类单例模式</strong></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123; </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span></span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span></span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> Inner.instance;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Inner</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Singleton instance = <span class="keyword">new</span> Singleton();  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>只有第一次调用getInstance方法时，虚拟机才加载 Inner 并初始化instance ，只有一个线程可以获得对象的初始化锁，其他线程无法进行初始化，保证对象的唯一性。目前此方式是所有单例模式中最推荐的模式，但具体还是根据项目选择。</p>
+<h2 id="五、总结"><a href="#五、总结" class="headerlink" title="五、总结"></a>五、总结</h2><p>当然，单例模式的实现方法还有很多。但是，这四种是比较经典的实现，也是我们应该掌握的几种实现方式。</p>
+<p>从这四种实现中，我们可以总结出，要想实现效率高的线程安全的单例，我们必须注意以下两点：</p>
+<ul>
+<li><strong>尽量减少同步块的作用域；</strong></li>
+<li><strong>尽量使用细粒度的锁。</strong></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/12/MYSQL%E4%BC%98%E5%8C%96%E7%9B%B8%E5%85%B3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -205,7 +501,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2019-11-12 20:33:57 / 修改时间：20:37:28" itemprop="dateCreated datePublished" datetime="2019-11-12T20:33:57+08:00">2019-11-12</time>
+              <time title="创建时间：2019-11-12 20:33:57 / 修改时间：21:20:06" itemprop="dateCreated datePublished" datetime="2019-11-12T20:33:57+08:00">2019-11-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1132,230 +1428,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/05/%E9%94%81%E6%9C%BA%E5%88%B6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="wingkywingky">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sagittarius">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/11/05/%E9%94%81%E6%9C%BA%E5%88%B6/" class="post-title-link" itemprop="url">锁机制</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-11-05 10:21:39 / 修改时间：10:33:52" itemprop="dateCreated datePublished" datetime="2019-11-05T10:21:39+08:00">2019-11-05</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index">
-                    <span itemprop="name">数据库</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="悲观锁与乐观锁"><a href="#悲观锁与乐观锁" class="headerlink" title="悲观锁与乐观锁"></a>悲观锁与乐观锁</h3><p>数据的锁定分为两种，第一种叫作悲观锁，第二种叫作乐观锁。</p>
-<p>1、悲观锁，就是对数据的冲突采取一种悲观的态度，也就是说假设数据肯定会冲突，所以在数据开始读取的时候就把数据锁定住。【数据锁定：数据将暂时不会得到修改】</p>
-<p>2、乐观锁，认为数据一般情况下不会造成冲突，所以在数据进行提交更新的时候，才会正式对数据的冲突与否进行检测，如果发现冲突了，则让用户返回错误的信息。让用户决定如何去做。</p>
-<h4 id="理解"><a href="#理解" class="headerlink" title="理解"></a><strong>理解</strong></h4><ol>
-<li>乐观锁是一种思想，具体实现是，表中有一个版本字段，第一次读的时候，获取到这个字段。处理完业务逻辑开始更新的时候，需要再次查看该字段的值是否和第一次的一样。如果一样更新，反之拒绝。</li>
-</ol>
-<p>之所以叫乐观，因为这个模式没有从数据库加锁。</p>
-<ol start="2">
-<li>悲观锁是读取的时候为后面的更新加锁，之后再来的读操作都会等待。这种是数据库锁</li>
-</ol>
-<p>乐观锁优点程序实现，不会存在死锁等问题。他的适用场景也相对乐观。阻止不了除了程序之外的数据库操作。</p>
-<p>悲观锁是数据库实现，他阻止一切数据库操作。</p>
-<h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a><strong>实现</strong></h4><p>一、悲观锁<br>    1、排它锁，当事务在操作数据时把这部分数据进行锁定，直到操作完毕后再解锁，其他事务操作才可操作该部分数据。这将防止其他进程读取或修改表中的数据。</p>
-<pre><code>2、实现：大多数情况下依靠数据库的锁机制实现
-
- 一般使用 select ...for update 对所选择的数据进行加锁处理，例如select * from account where name=”Max” for update， 这条sql 语句锁定了account 表中所有符合检索条件（name=”Max”）的记录。本次事务提交之前（事务提交时会释放事务过程中的锁），外界无法修改这些记录。</code></pre><p>二、乐观锁<br>    1、如果有人在你之前更新了，你的更新应当是被拒绝的，可以让用户重新操作。</p>
-<pre><code>2、实现：大多数基于数据版本（Version）记录机制实现
-
- 具体可通过给表加一个版本号或时间戳字段实现，当读取数据时，将version字段的值一同读出，数据每更新一次，对此version值加一。当我们提交更新的时候，判断当前版本信息与第一次取出来的版本值大小，如果数据库表当前版本号与第一次取出来的version值相等，则予以更新，否则认为是过期数据，拒绝更新，让用户重新操作。</code></pre><h3 id="表级锁和行级锁"><a href="#表级锁和行级锁" class="headerlink" title="表级锁和行级锁"></a>表级锁和行级锁</h3><p>Mysql为了解决并发、数据安全的问题，使用了锁机制。</p>
-<p>可以按照锁的粒度把数据库锁分为表级锁和行级锁。</p>
-<pre><code>表级锁
-
-Mysql中锁定 粒度最大 的一种锁，对当前操作的整张表加锁，实现简单 ，资源消耗也比较少，加锁快，不会出现死锁 。其锁定粒度最大，触发锁冲突的概率最高，并发度最低，MyISAM和 InnoDB引擎都支持表级锁。
-
-行级锁
-
-Mysql中锁定 粒度最小 的一种锁，只针对当前操作的行进行加锁。 行级锁能大大减少数据库操作的冲突。其加锁粒度最小，并发度高，但加锁的开销也最大，加锁慢，会出现死锁。 InnoDB支持的行级锁，包括如下几种。
-    Record Lock: 对索引项加锁，锁定符合条件的行。其他事务不能修改和删除加锁项；
-    Gap Lock: 对索引项之间的“间隙”加锁，锁定记录的范围（对第一条记录前的间隙或最后一条将记录后的间隙加锁），不包含索引项本身。其他事务不能在锁范围内插入数据，这样就防止了别的事务新增幻影行。
-    Next-key Lock： 锁定索引项本身和索引范围。即Record Lock和Gap Lock的结合。可解决幻读问题。</code></pre><p>虽然使用行级索具有粒度小、并发度高等特点，但是表级锁有时候也是非常必要的：</p>
-<pre><code>事务更新大表中的大部分数据直接使用表级锁效率更高；
-事务比较复杂，使用行级索很可能引起死锁导致回滚。</code></pre><p><strong>可以用以下方式避免死锁</strong></p>
-<ul>
-<li><strong>通过表级锁来减少死锁产生的概率；</strong></li>
-<li><strong>多个程序尽量约定以相同的顺序访问表（这也是解决并发理论中哲学家就餐问题的一种思路）；</strong></li>
-<li><strong>同一个事务尽可能做到一次锁定所需要的所有资源。</strong></li>
-</ul>
-<p><strong>表级锁和行级锁对比：</strong></p>
-<ul>
-<li><strong>表级锁：</strong> MySQL中锁定 <strong>粒度最大</strong> 的一种锁，对当前操作的整张表加锁，实现简单，资源消耗也比较少，加锁快，不会出现死锁。其锁定粒度最大，触发锁冲突的概率最高，并发度最低，MyISAM和 InnoDB引擎都支持表级锁。</li>
-<li><strong>行级锁：</strong> MySQL中锁定 <strong>粒度最小</strong> 的一种锁，只针对当前操作的行进行加锁。 行级锁能大大减少数据库操作的冲突。其加锁粒度最小，并发度高，但加锁的开销也最大，加锁慢，会出现死锁。 </li>
-</ul>
-<h3 id="多版本并发控制"><a href="#多版本并发控制" class="headerlink" title="多版本并发控制"></a>多版本并发控制</h3><p>多版本并发控制（Multi-Version Concurrency Control, MVCC）是 MySQL 的 InnoDB  存储引擎实现隔离级别的一种具体方式，用于实现提交读和可重复读这两种隔离级别。而未提交读隔离级别总是读取最新的数据行，无需使用  MVCC。可串行化隔离级别需要对所有读取的行都加锁，单纯使用 MVCC 无法实现。</p>
-<h4 id="版本号"><a href="#版本号" class="headerlink" title="版本号"></a>版本号</h4><ul>
-<li>系统版本号：是一个递增的数字，每开始一个新的事务，系统版本号就会自动递增。</li>
-<li>事务版本号：事务开始时的系统版本号。</li>
-</ul>
-<h4 id="隐藏的列"><a href="#隐藏的列" class="headerlink" title="隐藏的列"></a>隐藏的列</h4><p>MVCC 在每行记录后面都保存着两个隐藏的列，用来存储两个版本号：</p>
-<ul>
-<li>创建版本号：指示创建一个数据行的快照时的系统版本号；</li>
-<li>删除版本号：如果该快照的删除版本未定义或删除版本号大于当前事务版本号表示该快照有效</li>
-</ul>
-<h4 id="Undo-日志"><a href="#Undo-日志" class="headerlink" title="Undo 日志"></a>Undo 日志</h4><p>MVCC 使用到的快照存储在 Undo 日志中，该日志通过回滚指针把一个数据行（Record）的所有快照连接起来。</p>
-<p> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/e41405a8-7c05-4f70-8092-e961e28d3112.jpg" alt="img"> </p>
-<h4 id="实现过程"><a href="#实现过程" class="headerlink" title="实现过程"></a>实现过程</h4><p>以下实现过程针对可重复读隔离级别。</p>
-<p>当开始一个事务时，该事务的版本号肯定大于当前所有数据行快照的创建版本号，理解这一点很关键。数据行快照的创建版本号是创建数据行快照时的系统版本号，系统版本号随着创建事务而递增，因此新创建一个事务时，这个事务的系统版本号比之前的系统版本号都大，也就是比所有数据行快照的创建版本号都大。</p>
-<h5 id="1-SELECT"><a href="#1-SELECT" class="headerlink" title="1. SELECT"></a>1. SELECT</h5><p>多个事务必须读取到同一个数据行的快照，并且这个快照是距离现在最近的一个有效快照。但是也有例外，如果有一个事务正在修改该数据行，那么它可以读取事务本身所做的修改，而不用和其它事务的读取结果一致。</p>
-<p>把没有对一个数据行做修改的事务称为  T，T 所要读取的数据行快照的创建版本号必须小于等于 T 的版本号，因为如果大于 T  的版本号，那么表示该数据行快照是其它事务的最新修改，因此不能去读取它。除此之外，T 所要读取的数据行快照的删除版本号必须是未定义或者大于 T  的版本号，因为如果小于等于 T 的版本号，那么表示该数据行快照是已经被删除的，不应该去读取它。</p>
-<h5 id="2-INSERT"><a href="#2-INSERT" class="headerlink" title="2. INSERT"></a>2. INSERT</h5><p>将当前系统版本号作为数据行快照的创建版本号。</p>
-<h5 id="3-DELETE"><a href="#3-DELETE" class="headerlink" title="3. DELETE"></a>3. DELETE</h5><p>将当前系统版本号作为数据行快照的删除版本号。</p>
-<h5 id="4-UPDATE"><a href="#4-UPDATE" class="headerlink" title="4. UPDATE"></a>4. UPDATE</h5><p>将当前系统版本号作为更新前的数据行快照的删除版本号，并将当前系统版本号作为更新后的数据行快照的创建版本号。可以理解为先执行 DELETE 后执行 INSERT。</p>
-<h3 id="快照读与当前读"><a href="#快照读与当前读" class="headerlink" title="快照读与当前读"></a>快照读与当前读</h3><h4 id="1-快照读"><a href="#1-快照读" class="headerlink" title="1. 快照读"></a>1. 快照读</h4><p>使用 MVCC 读取的是快照中的数据，这样可以减少加锁所带来的开销。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">table</span> ...;</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-当前读"><a href="#2-当前读" class="headerlink" title="2. 当前读"></a>2. 当前读</h4><p>读取的是最新的数据，需要加锁。以下第一个语句需要加 S 锁，其它都需要加 X 锁。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">table</span> <span class="keyword">where</span> ? <span class="keyword">lock</span> <span class="keyword">in</span> <span class="keyword">share</span> <span class="keyword">mode</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">table</span> <span class="keyword">where</span> ? <span class="keyword">for</span> <span class="keyword">update</span>;</span><br><span class="line"><span class="keyword">insert</span>;</span><br><span class="line"><span class="keyword">update</span>;</span><br><span class="line"><span class="keyword">delete</span>;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/04/%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="wingkywingky">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sagittarius">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/11/04/%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E/" class="post-title-link" itemprop="url">存储引擎</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-11-04 14:50:49 / 修改时间：14:51:42" itemprop="dateCreated datePublished" datetime="2019-11-04T14:50:49+08:00">2019-11-04</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index">
-                    <span itemprop="name">数据库</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>文字描述 ：</p>
-<p>Innodb引擎</p>
-<p>Innodb引擎提供了对数据库ACID事务的支持，并且实现了SQL标准的四种隔离级别。该引擎还提供了行级锁和外键约束，它的设计目标是处理大容量数据库系统，它本身其实就是基于MySQL后台的完整数据库系统，MySQL运行时Innodb会在内存中建立缓冲池，用于缓冲数据和索引。但是该引擎不支持FULLTEXT类型的索引，而且它没有保存表的行数，当SELECT COUNT(*) FROM TABLE时需要扫描全表。当需要使用数据库事务时，该引擎当然是首选。由于锁的粒度更小，写操作不会锁定全表，所以在并发较高时，使用Innodb引擎会提升效率。但是使用行级锁也不是绝对的，如果在执行一个SQL语句时MySQL不能确定要扫描的范围，InnoDB表同样会锁全表。</p>
-<p>MyISAM引擎</p>
-<p>MyISAM是MySQL默认的引擎，但是它没有提供对数据库事务的支持，也不支持行级锁和外键，因此当INSERT(插入)或UPDATE(更新)数据时即写操作需要锁定整个表，效率便会低一些。不过和Innodb不同，MyISAM中存储了表的行数，于是SELECT COUNT(*) FROM TABLE时只需要直接读取已经保存好的值而不需要进行全表扫描。如果表的读操作远远多于写操作且不需要数据库事务的支持，那么MyISAM也是很好的选择。<br>主要区别：</p>
-<p>1、MyISAM是非事务安全的，而InnoDB是事务安全的</p>
-<p>2、MyISAM锁的粒度是表级的，而InnoDB支持行级锁</p>
-<p>3、MyISAM支持全文类型索引，而InnoDB不支持全文索引</p>
-<p>4、MyISAM相对简单，效率上要优于InnoDB，小型应用可以考虑使用MyISAM</p>
-<p>5、MyISAM表保存成文件形式，跨平台使用更加方便</p>
-<p>怎样选择存储引擎</p>
-<p>在实际工作中，选择一个合适的存储引擎是一个比较复杂的问题。每种存储引擎都有自己的优缺点，不能笼统地说谁比谁好。</p>
-<p>应用场景：</p>
-<p>InnoDB：支持事务处理，支持外键，支持崩溃修复能力和并发控制。如果需要对事务的完整性要求比较高（比如银行），要求实现并发控制（比如售票），那选择InnoDB有很大的优势。如果需要频繁的更新、删除操作的数据库，也可以选择InnoDB，因为支持事务的提交（commit）和回滚（rollback）。 </p>
-<p>MyISAM：插入数据快，空间和内存使用比较低。如果表主要是用于插入新记录和读出记录，那么选择MyISAM能实现处理高效率。如果应用的完整性、并发性要求比 较低，也可以使用。</p>
-<p>MEMORY：所有的数据都在内存中，数据的处理速度快，但是安全性不高。如果需要很快的读写速度，对数据的安全性要求较低，可以选择MEMOEY。它对表的大小有要求，不能建立太大的表。所以，这类数据库只使用在相对较小的数据库表。</p>
-<p>注意，同一个数据库也可以使用多种存储引擎的表。如果一个表要求比较高的事务处理，可以选择InnoDB。这个数据库中可以将查询要求比较高的表选择MyISAM存储。如果该数据库需要一个用于查询的临时表，可以选择MEMORY存储引擎。</p>
-<p>常用的两种引擎简单来说：</p>
-<p>1、MyISAM管理非事务表，提供高速存储和检索以及全文搜索能力，如果再应用中执行大量select操作，应该选择MyISAM</p>
-<p>2、InnoDB用于事务处理，具有ACID事务支持等特性，如果在应用中执行大量insert和update操作，应该选择InnoDB</p>
-<p>————————————————<br>版权声明：本文为CSDN博主「isxuran」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。<br>原文链接：<a href="https://blog.csdn.net/qq_21870555/article/details/82991660" target="_blank" rel="noopener">https://blog.csdn.net/qq_21870555/article/details/82991660</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1406,20 +1478,20 @@ Mysql中锁定 粒度最小 的一种锁，只针对当前操作的行进行加�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-count">39</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1444,7 +1516,7 @@ Mysql中锁定 粒度最小 的一种锁，只针对当前操作的行进行加�
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

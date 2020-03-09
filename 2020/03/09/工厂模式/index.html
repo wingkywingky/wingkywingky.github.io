@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.4.2',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="工厂顾名思义就是创建产品，根据产品是具体产品还是具体工厂可分为简单工厂模式和工厂方法模式，根据工厂的抽象程度可分为工厂方法模式和抽象工厂模式。该模式用于封装和管理对象的创建，是一种创建型模式。本文从一个具体的例子逐步深入分析，来体会三种工厂模式的应用场景和利弊。 1. 简单工厂模式该模式对对象创建管理方式最为简单，因为其仅仅简单的对不同类对象的创建进行了一层薄薄的封装。该模式通过向工厂传递类型来指">
+<meta name="keywords" content="工厂模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="工厂模式">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2020&#x2F;03&#x2F;09&#x2F;%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F&#x2F;index.html">
+<meta property="og:site_name" content="Sagittarius">
+<meta property="og:description" content="工厂顾名思义就是创建产品，根据产品是具体产品还是具体工厂可分为简单工厂模式和工厂方法模式，根据工厂的抽象程度可分为工厂方法模式和抽象工厂模式。该模式用于封装和管理对象的创建，是一种创建型模式。本文从一个具体的例子逐步深入分析，来体会三种工厂模式的应用场景和利弊。 1. 简单工厂模式该模式对对象创建管理方式最为简单，因为其仅仅简单的对不同类对象的创建进行了一层薄薄的封装。该模式通过向工厂传递类型来指">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https:&#x2F;&#x2F;img2018.cnblogs.com&#x2F;blog&#x2F;1419489&#x2F;201906&#x2F;1419489-20190628144601084-563759643.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;img2018.cnblogs.com&#x2F;blog&#x2F;1419489&#x2F;201906&#x2F;1419489-20190628154133368-906051111.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;img2018.cnblogs.com&#x2F;blog&#x2F;1419489&#x2F;201906&#x2F;1419489-20190628170705865-1781414242.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;img2018.cnblogs.com&#x2F;blog&#x2F;1419489&#x2F;201906&#x2F;1419489-20190628164001258-637961514.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;common.cnblogs.com&#x2F;images&#x2F;copycode.gif">
+<meta property="og:updated_time" content="2020-03-09T08:06:56.356Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;img2018.cnblogs.com&#x2F;blog&#x2F;1419489&#x2F;201906&#x2F;1419489-20190628144601084-563759643.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/03/09/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>工厂模式 | Sagittarius</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sagittarius</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/09/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wingkywingky">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sagittarius">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          工厂模式
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-03-09 16:05:38 / 修改时间：16:06:56" itemprop="dateCreated datePublished" datetime="2020-03-09T16:05:38+08:00">2020-03-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>工厂顾名思义就是创建产品，根据产品是具体产品还是具体工厂可分为简单工厂模式和工厂方法模式，根据工厂的抽象程度可分为工厂方法模式和抽象工厂模式。该模式用于封装和管理对象的创建，是一种创建型模式。本文从一个具体的例子逐步深入分析，来体会三种工厂模式的应用场景和利弊。</p>
+<h3 id="1-简单工厂模式"><a href="#1-简单工厂模式" class="headerlink" title="1. 简单工厂模式"></a>1. 简单工厂模式</h3><p>该模式对对象创建管理方式最为简单，因为其仅仅简单的对不同类对象的创建进行了一层薄薄的封装。该模式通过向工厂传递类型来指定要创建的对象，其UML类图如下：</p>
+<p><img src="https://img2018.cnblogs.com/blog/1419489/201906/1419489-20190628144601084-563759643.png" alt="img"></p>
+<p>下面我们使用手机生产来讲解该模式：</p>
+<p><strong>Phone类</strong>：手机标准规范类(AbstractProduct)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface Phone &#123;</span><br><span class="line">    void make();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>  <strong>MiPhone类</strong>：制造小米手机（Product1）</p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class MiPhone implements Phone &#123;</span><br><span class="line">    public MiPhone() &#123;</span><br><span class="line">        this.make();</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public void make() &#123;</span><br><span class="line">        // TODO Auto-generated method stub</span><br><span class="line">        System.out.println(&quot;make xiaomi phone!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<p><strong>IPhone类</strong>：制造苹果手机（Product2）</p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class IPhone implements Phone &#123;</span><br><span class="line">    public IPhone() &#123;</span><br><span class="line">        this.make();</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public void make() &#123;</span><br><span class="line">        // TODO Auto-generated method stub</span><br><span class="line">        System.out.println(&quot;make iphone!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<p><strong>PhoneFactory类</strong>：手机代工厂（Factory）</p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class PhoneFactory &#123;</span><br><span class="line">    public Phone makePhone(String phoneType) &#123;</span><br><span class="line">        if(phoneType.equalsIgnoreCase(&quot;MiPhone&quot;))&#123;</span><br><span class="line">            return new MiPhone();</span><br><span class="line">        &#125;</span><br><span class="line">        else if(phoneType.equalsIgnoreCase(&quot;iPhone&quot;)) &#123;</span><br><span class="line">            return new IPhone();</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<p> <strong>演示：</strong></p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class Demo &#123;</span><br><span class="line">    public static void main(String[] arg) &#123;</span><br><span class="line">        PhoneFactory factory = new PhoneFactory();</span><br><span class="line">        Phone miPhone = factory.makePhone(&quot;MiPhone&quot;);            // make xiaomi phone!</span><br><span class="line">        IPhone iPhone = (IPhone)factory.makePhone(&quot;iPhone&quot;);    // make iphone!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<h3 id="2-工厂方法模式-Factory-Method"><a href="#2-工厂方法模式-Factory-Method" class="headerlink" title="2. 工厂方法模式(Factory Method)"></a>2. 工厂方法模式(Factory Method)</h3><p>和简单工厂模式中工厂负责生产所有产品相比，工厂方法模式将生成具体产品的任务分发给具体的产品工厂，其UML类图如下：</p>
+<p><img src="https://img2018.cnblogs.com/blog/1419489/201906/1419489-20190628154133368-906051111.png" alt="img"></p>
+<p>也就是定义一个抽象工厂，其定义了产品的生产接口，但不负责具体的产品，将生产任务交给不同的派生类工厂。这样不用通过指定类型来创建对象了。</p>
+<p>接下来继续使用生产手机的例子来讲解该模式。</p>
+<p>其中和产品相关的Phone类、MiPhone类和IPhone类的定义不变。</p>
+<p><strong>AbstractFactory类</strong>：生产不同产品的工厂的抽象类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface AbstractFactory &#123;</span><br><span class="line">    Phone makePhone();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>XiaoMiFactory类</strong>：生产小米手机的工厂（ConcreteFactory1）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class XiaoMiFactory implements AbstractFactory&#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Phone makePhone() &#123;</span><br><span class="line">        return new MiPhone();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>AppleFactory类</strong>：生产苹果手机的工厂（ConcreteFactory2）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class AppleFactory implements AbstractFactory &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Phone makePhone() &#123;</span><br><span class="line">        return new IPhone();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>演示：</strong></p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public class Demo &#123;</span><br><span class="line">    public static void main(String[] arg) &#123;</span><br><span class="line">        AbstractFactory miFactory = new XiaoMiFactory();</span><br><span class="line">        AbstractFactory appleFactory = new AppleFactory();</span><br><span class="line">        miFactory.makePhone();            // make xiaomi phone!</span><br><span class="line">        appleFactory.makePhone();        // make iphone!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<h3 id="3-抽象工厂模式-Abstract-Factory"><a href="#3-抽象工厂模式-Abstract-Factory" class="headerlink" title="3. 抽象工厂模式(Abstract Factory)"></a>3. 抽象工厂模式(Abstract Factory)</h3><p>上面两种模式不管工厂怎么拆分抽象，都只是针对一类产品<strong>Phone</strong>（AbstractProduct），如果要生成另一种产品PC，应该怎么表示呢？</p>
+<p>最简单的方式是把2中介绍的工厂方法模式完全复制一份，不过这次生产的是PC。但同时也就意味着我们要完全复制和修改Phone生产管理的所有代码，显然这是一个笨办法，并不利于扩展和维护。</p>
+<p>抽象工厂模式通过在AbstarctFactory中增加创建产品的接口，并在具体子工厂中实现新加产品的创建，当然前提是子工厂支持生产该产品。否则继承的这个接口可以什么也不干。</p>
+<p>其UML类图如下：</p>
+<p><img src="https://img2018.cnblogs.com/blog/1419489/201906/1419489-20190628170705865-1781414242.png" alt="img"></p>
+<p>从上面类图结构中可以清楚的看到如何在工厂方法模式中通过增加新产品接口来实现产品的增加的。</p>
+<p>接下来我们继续通过小米和苹果产品生产的例子来解释该模式。</p>
+<p>为了弄清楚上面的结构，我们使用具体的产品和工厂来表示上面的UML类图，能更加清晰的看出模式是如何演变的：</p>
+<p><img src="https://img2018.cnblogs.com/blog/1419489/201906/1419489-20190628164001258-637961514.png" alt="img"></p>
+<p><strong>PC类</strong>：定义PC产品的接口(AbstractPC)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface PC &#123;</span><br><span class="line">    void make();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>MiPC类</strong>：定义小米电脑产品(MIPC)</p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class MiPC implements PC &#123;</span><br><span class="line">    public MiPC() &#123;</span><br><span class="line">        this.make();</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public void make() &#123;</span><br><span class="line">        // TODO Auto-generated method stub</span><br><span class="line">        System.out.println(&quot;make xiaomi PC!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<p><strong>MAC类</strong>：定义苹果电脑产品(MAC)</p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class MAC implements PC &#123;</span><br><span class="line">    public MAC() &#123;</span><br><span class="line">        this.make();</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public void make() &#123;</span><br><span class="line">        // TODO Auto-generated method stub</span><br><span class="line">        System.out.println(&quot;make MAC!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<p>下面需要修改工厂相关的类的定义：</p>
+<p><strong>AbstractFactory类</strong>：增加PC产品制造接口</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface AbstractFactory &#123;</span><br><span class="line">    Phone makePhone();</span><br><span class="line">    PC makePC();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>XiaoMiFactory类</strong>：增加小米PC的制造（ConcreteFactory1）</p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class XiaoMiFactory implements AbstractFactory&#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Phone makePhone() &#123;</span><br><span class="line">        return new MiPhone();</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public PC makePC() &#123;</span><br><span class="line">        return new MiPC();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<p><strong>AppleFactory类</strong>：增加苹果PC的制造（ConcreteFactory2）</p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class AppleFactory implements AbstractFactory &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Phone makePhone() &#123;</span><br><span class="line">        return new IPhone();</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public PC makePC() &#123;</span><br><span class="line">        return new MAC();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<p><strong>演示：</strong></p>
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class Demo &#123;</span><br><span class="line">    public static void main(String[] arg) &#123;</span><br><span class="line">        AbstractFactory miFactory = new XiaoMiFactory();</span><br><span class="line">        AbstractFactory appleFactory = new AppleFactory();</span><br><span class="line">        miFactory.makePhone();            // make xiaomi phone!</span><br><span class="line">        miFactory.makePC();                // make xiaomi PC!</span><br><span class="line">        appleFactory.makePhone();        // make iphone!</span><br><span class="line">        appleFactory.makePC();            // make MAC!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="javascript:void(0);"><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></a></p>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>上面介绍的三种工厂模式有各自的应用场景，实际应用时能解决问题满足需求即可，可灵活变通，无所谓高级与低级。</p>
+<p>此外无论哪种模式，由于可能封装了大量对象和工厂创建，新加产品需要修改已定义好的工厂相关的类，因此对于产品和工厂的扩展不太友好，利弊需要权衡一下。 </p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/" rel="tag"># 工厂模式</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2020/03/09/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" rel="next" title="单例模式">
+                  <i class="fa fa-chevron-left"></i> 单例模式
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-简单工厂模式"><span class="nav-number">1.</span> <span class="nav-text">1. 简单工厂模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-工厂方法模式-Factory-Method"><span class="nav-number">2.</span> <span class="nav-text">2. 工厂方法模式(Factory Method)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-抽象工厂模式-Abstract-Factory"><span class="nav-number">3.</span> <span class="nav-text">3. 抽象工厂模式(Abstract Factory)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结："><span class="nav-number">4.</span> <span class="nav-text">总结：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <img class="site-author-image" itemprop="image" alt="wingkywingky"
+    src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">wingkywingky</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wingkywingky</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.0.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.4.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
