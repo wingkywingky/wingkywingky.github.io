@@ -180,6 +180,357 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/31/HashMap%E7%9A%84%E5%AE%9E%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wingkywingky">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sagittarius">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/10/31/HashMap%E7%9A%84%E5%AE%9E%E7%8E%B0/" class="post-title-link" itemprop="url">HashMap的实现</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-10-31 22:37:21 / 修改时间：23:23:23" itemprop="dateCreated datePublished" datetime="2019-10-31T22:37:21+08:00">2019-10-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA基础</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="HashMap的存储结构"><a href="#HashMap的存储结构" class="headerlink" title="HashMap的存储结构"></a>HashMap的存储结构</h3><p>内部包含了一个 Entry 类型的数组 table。</p>
+<p>Entry 存储着键值对。它包含了四个字段，从 next 字段我们可以看出 Entry 是一个链表。即数组中的每个位置被当成一个桶，一个桶存放一个链表。HashMap 使用拉链法来解决冲突，同一个链表中存放哈希值和散列桶取模运算结果相同的 Entry。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> K key;</span><br><span class="line">    V value;</span><br><span class="line">    Entry&lt;K,V&gt; next;</span><br><span class="line">    <span class="keyword">int</span> hash;</span><br><span class="line"></span><br><span class="line">    Entry(<span class="keyword">int</span> h, K k, V v, Entry&lt;K,V&gt; n) &#123;</span><br><span class="line">        value = v;</span><br><span class="line">        next = n;</span><br><span class="line">        key = k;</span><br><span class="line">        hash = h;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> K <span class="title">getKey</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> key;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">getValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">setValue</span><span class="params">(V newValue)</span> </span>&#123;</span><br><span class="line">        V oldValue = value;</span><br><span class="line">        value = newValue;</span><br><span class="line">        <span class="keyword">return</span> oldValue;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!(o <span class="keyword">instanceof</span> Map.Entry))</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        Map.Entry e = (Map.Entry)o;</span><br><span class="line">        Object k1 = getKey();</span><br><span class="line">        Object k2 = e.getKey();</span><br><span class="line">        <span class="keyword">if</span> (k1 == k2 || (k1 != <span class="keyword">null</span> &amp;&amp; k1.equals(k2))) &#123;</span><br><span class="line">            Object v1 = getValue();</span><br><span class="line">            Object v2 = e.getValue();</span><br><span class="line">            <span class="keyword">if</span> (v1 == v2 || (v1 != <span class="keyword">null</span> &amp;&amp; v1.equals(v2)))</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Objects.hashCode(getKey()) ^ Objects.hashCode(getValue());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> getKey() + <span class="string">"="</span> + getValue();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>从 JDK 1.8 开始，一个桶存储的链表长度大于等于 8 时会将链表转换为红黑树。</strong></p>
+<h3 id="拉链法的工作原理"><a href="#拉链法的工作原理" class="headerlink" title="拉链法的工作原理"></a>拉链法的工作原理</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HashMap&lt;String, String&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">map.put(<span class="string">"K1"</span>, <span class="string">"V1"</span>);</span><br><span class="line">map.put(<span class="string">"K2"</span>, <span class="string">"V2"</span>);</span><br><span class="line">map.put(<span class="string">"K3"</span>, <span class="string">"V3"</span>);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>新建一个 HashMap，默认大小为 16；</li>
+<li>插入 &lt;K1,V1&gt; 键值对，先计算 K1 的 hashCode 为 115，使用除留余数法得到所在的桶下标 115%16=3。</li>
+<li>插入 &lt;K2,V2&gt; 键值对，先计算 K2 的 hashCode 为 118，使用除留余数法得到所在的桶下标 118%16=6。</li>
+<li>插入 &lt;K3,V3&gt; 键值对，先计算 K3 的 hashCode 为 118，使用除留余数法得到所在的桶下标 118%16=6，插在 &lt;K2,V2&gt; 前面。</li>
+</ul>
+<p>应该注意到链表的插入是以头插法<strong>（java8后改为尾插法）</strong>方式进行的，例如上面的 &lt;K3,V3&gt; 不是插在 &lt;K2,V2&gt; 后面，而是插入在链表头部。</p>
+<p>查找需要分成两步进行：</p>
+<ul>
+<li>计算键值对所在的桶；</li>
+<li>在链表上顺序查找，时间复杂度显然和链表的长度成正比。</li>
+</ul>
+<h3 id="put操作"><a href="#put操作" class="headerlink" title="put操作"></a>put操作</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (table == EMPTY_TABLE) &#123;</span><br><span class="line">        inflateTable(threshold);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 键为 null 单独处理</span></span><br><span class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">return</span> putForNullKey(value);</span><br><span class="line">    <span class="keyword">int</span> hash = hash(key);</span><br><span class="line">    <span class="comment">// 确定桶下标</span></span><br><span class="line">    <span class="keyword">int</span> i = indexFor(hash, table.length);</span><br><span class="line">    <span class="comment">// 先找出是否已经存在键为 key 的键值对，如果存在的话就更新这个键值对的值为 value</span></span><br><span class="line">    <span class="keyword">for</span> (Entry&lt;K,V&gt; e = table[i]; e != <span class="keyword">null</span>; e = e.next) &#123;</span><br><span class="line">        Object k;</span><br><span class="line">        <span class="keyword">if</span> (e.hash == hash &amp;&amp; ((k = e.key) == key || key.equals(k))) &#123;</span><br><span class="line">            V oldValue = e.value;</span><br><span class="line">            e.value = value;</span><br><span class="line">            e.recordAccess(<span class="keyword">this</span>);</span><br><span class="line">            <span class="keyword">return</span> oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    modCount++;</span><br><span class="line">    <span class="comment">// 插入新键值对</span></span><br><span class="line">    addEntry(hash, key, value, i);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>HashMap 允许插入键为 null 的键值对。但是因为无法调用 null 的 hashCode() 方法，也就无法确定该键值对的桶下标，只能通过强制指定一个桶下标来存放。HashMap 使用第 0 个桶存放键为 null 的键值对。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> V <span class="title">putForNullKey</span><span class="params">(V value)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (Entry&lt;K,V&gt; e = table[<span class="number">0</span>]; e != <span class="keyword">null</span>; e = e.next) &#123;</span><br><span class="line">        <span class="keyword">if</span> (e.key == <span class="keyword">null</span>) &#123;</span><br><span class="line">            V oldValue = e.value;</span><br><span class="line">            e.value = value;</span><br><span class="line">            e.recordAccess(<span class="keyword">this</span>);</span><br><span class="line">            <span class="keyword">return</span> oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    modCount++;</span><br><span class="line">    addEntry(<span class="number">0</span>, <span class="keyword">null</span>, value, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用链表的头插法，也就是新的键值对插在链表的头部，而不是链表的尾部。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">addEntry</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">int</span> bucketIndex)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> ((size &gt;= threshold) &amp;&amp; (<span class="keyword">null</span> != table[bucketIndex])) &#123;</span><br><span class="line">        resize(<span class="number">2</span> * table.length);</span><br><span class="line">        hash = (<span class="keyword">null</span> != key) ? hash(key) : <span class="number">0</span>;</span><br><span class="line">        bucketIndex = indexFor(hash, table.length);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    createEntry(hash, key, value, bucketIndex);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">createEntry</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">int</span> bucketIndex)</span> </span>&#123;</span><br><span class="line">    Entry&lt;K,V&gt; e = table[bucketIndex];</span><br><span class="line">    <span class="comment">// 头插法，链表头部指向新的键值对</span></span><br><span class="line">    table[bucketIndex] = <span class="keyword">new</span> Entry&lt;&gt;(hash, key, value, e);</span><br><span class="line">    size++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="确定桶的下标"><a href="#确定桶的下标" class="headerlink" title="确定桶的下标"></a>确定桶的下标</h3><p>很多操作都需要先确定一个键值对所在的桶下标。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int hash = hash(key);</span><br><span class="line">int i = indexFor(hash, table.length);</span><br></pre></td></tr></table></figure>
+
+<p><strong>计算hash值</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">final int hash(Object k) &#123;</span><br><span class="line">    int h = hashSeed;</span><br><span class="line">    if (0 != h &amp;&amp; k instanceof String) &#123;</span><br><span class="line">        return sun.misc.Hashing.stringHash32((String) k);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    h ^= k.hashCode();</span><br><span class="line"></span><br><span class="line">    // This function ensures that hashCodes that differ only by</span><br><span class="line">    // constant multiples at each bit position have a bounded</span><br><span class="line">    // number of collisions (approximately 8 at default load factor).</span><br><span class="line">    h ^= (h &gt;&gt;&gt; 20) ^ (h &gt;&gt;&gt; 12);</span><br><span class="line">    return h ^ (h &gt;&gt;&gt; 7) ^ (h &gt;&gt;&gt; 4);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public final int hashCode() &#123;</span><br><span class="line">    return Objects.hashCode(key) ^ Objects.hashCode(value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>取模</strong></p>
+<p>令 x = 1&lt;&lt;4，即 x 为 2 的 4 次方，它具有以下性质：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x   : 00010000</span><br><span class="line">x-1 : 00001111</span><br></pre></td></tr></table></figure>
+
+<p>令一个数 y 与 x-1 做与运算，可以去除 y 位级表示的第 4 位以上数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">y       : 10110010</span><br><span class="line">x-1     : 00001111</span><br><span class="line">y&amp;(x-1) : 00000010</span><br></pre></td></tr></table></figure>
+
+<p>这个性质和 y 对 x 取模效果是一样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">y   : 10110010</span><br><span class="line">x   : 00010000</span><br><span class="line">y%x : 00000010</span><br></pre></td></tr></table></figure>
+
+<p>我们知道，位运算的代价比求模运算小的多，因此在进行这种计算时用位运算的话能带来更高的性能。</p>
+<p>确定桶下标的最后一步是将 key 的 hash 值对桶个数取模：hash%capacity，如果能保证 capacity 为 2 的 n 次方，那么就可以将这个操作转换为位运算。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">indexFor</span><span class="params">(<span class="keyword">int</span> h, <span class="keyword">int</span> length)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> h &amp; (length-<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="HashMap的扩容机制"><a href="#HashMap的扩容机制" class="headerlink" title="HashMap的扩容机制"></a>HashMap的扩容机制</h3><p>和扩容相关的参数主要有：capacity、size、threshold 和 load_factor。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>capacity</td>
+<td>table 的容量大小，默认为 16。需要注意的是 capacity 必须保证为 2 的 n 次方。</td>
+</tr>
+<tr>
+<td>size</td>
+<td>键值对数量。</td>
+</tr>
+<tr>
+<td>threshold</td>
+<td>size 的临界值，当 size 大于等于 threshold 就必须进行扩容操作。</td>
+</tr>
+<tr>
+<td>loadFactor</td>
+<td>装载因子，table 能够使用的比例，threshold = (int)(newCapacity * loadFactor)。</td>
+</tr>
+</tbody></table>
+<p>从下面的添加元素代码中可以看出，当需要扩容时，令 capacity 为原来的两倍。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">void addEntry(int hash, K key, V value, int bucketIndex) &#123;</span><br><span class="line">    Entry&lt;K,V&gt; e = table[bucketIndex];</span><br><span class="line">    table[bucketIndex] = new Entry&lt;&gt;(hash, key, value, e);</span><br><span class="line">    if (size++ &gt;= threshold)</span><br><span class="line">        resize(2 * table.length);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>扩容使用 resize() 实现，需要注意的是，扩容操作同样需要把 oldTable 的所有键值对重新插入 newTable 中，因此这一步是很费时的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">resize</span><span class="params">(<span class="keyword">int</span> newCapacity)</span> </span>&#123;</span><br><span class="line">    Entry[] oldTable = table;</span><br><span class="line">    <span class="keyword">int</span> oldCapacity = oldTable.length;</span><br><span class="line">    <span class="keyword">if</span> (oldCapacity == MAXIMUM_CAPACITY) &#123;</span><br><span class="line">        threshold = Integer.MAX_VALUE;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    Entry[] newTable = <span class="keyword">new</span> Entry[newCapacity];</span><br><span class="line">    transfer(newTable);</span><br><span class="line">    table = newTable;</span><br><span class="line">    threshold = (<span class="keyword">int</span>)(newCapacity * loadFactor);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">transfer</span><span class="params">(Entry[] newTable)</span> </span>&#123;</span><br><span class="line">    Entry[] src = table;</span><br><span class="line">    <span class="keyword">int</span> newCapacity = newTable.length;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; src.length; j++) &#123;</span><br><span class="line">        Entry&lt;K,V&gt; e = src[j];</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">            src[j] = <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">do</span> &#123;</span><br><span class="line">                Entry&lt;K,V&gt; next = e.next;</span><br><span class="line">                <span class="keyword">int</span> i = indexFor(e.hash, newCapacity);</span><br><span class="line">                e.next = newTable[i];</span><br><span class="line">                newTable[i] = e;</span><br><span class="line">                e = next;</span><br><span class="line">            &#125; <span class="keyword">while</span> (e != <span class="keyword">null</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在进行扩容时，需要把键值对重新计算桶下标，从而放到对应的桶上。在前面提到，HashMap 使用 hash%capacity 来确定桶下标。HashMap capacity 为 2 的 n 次方这一特点能够极大降低重新计算桶下标操作的复杂度。</p>
+<p>假设原数组长度 capacity 为 16，扩容之后 new capacity 为 32：</p>
+<p>对于一个 Key，它的哈希值 hash 在第 5 位：</p>
+<ul>
+<li>为 0，那么 hash%00010000 = hash%00100000，桶位置和原来一致；</li>
+<li>为 1，hash%00010000 = hash%00100000 + 16，桶位置是原位置 + 16。</li>
+</ul>
+<h3 id="HashMap与HashTable的区别"><a href="#HashMap与HashTable的区别" class="headerlink" title="HashMap与HashTable的区别"></a>HashMap与HashTable的区别</h3><ul>
+<li>Hashtable 使用 synchronized 来进行同步。</li>
+<li>HashMap 可以插入键为 null 的 Entry。</li>
+<li>HashMap 的迭代器是 fail-fast 迭代器。</li>
+<li>HashMap 不能保证随着时间的推移 Map 中的元素次序是不变的。</li>
+</ul>
+<h3 id="HashMap-的长度为什么是2的幂次方"><a href="#HashMap-的长度为什么是2的幂次方" class="headerlink" title="HashMap 的长度为什么是2的幂次方"></a>HashMap 的长度为什么是2的幂次方</h3><p>HashMap为了存取高效，要尽量较少碰撞，就是要尽量把数据分配均匀，每个链表长度大致相同，这个实现就在把数据存到哪个链表中的算法；<br>这个算法实际就是取模，hash%length，计算机中直接求余效率不如位移运算，源码中做了优化hash&amp;(length-1)，<br>hash%length==hash&amp;(length-1)的前提是length是2的n次方；<br>为什么这样能均匀分布减少碰撞呢？2的n次方实际就是1后面n个0，2的n次方-1  实际就是n个1；<br>例如长度为9时候，3&amp;(9-1)=0  2&amp;(9-1)=0 ，都在0上，碰撞了；<br>例如长度为8时候，3&amp;(8-1)=3  2&amp;(8-1)=2 ，不同位置上，不碰撞；</p>
+<p>其实就是按位“与”的时候，每一位都能  &amp;1  ，也就是和1111……1111111进行与运算</p>
+<h3 id="hashmap的负载因子为什么是0-75"><a href="#hashmap的负载因子为什么是0-75" class="headerlink" title="hashmap的负载因子为什么是0.75"></a>hashmap的负载因子为什么是0.75</h3><p>  如果是0.5 ， 那么每次达到容量的一半就进行扩容，默认容量是16， 达到8就扩容成32，达到16就扩容成64， 最终使用空间和未使用空间的差值会逐渐增加，空间利用率低下。  如果是1，那意味着每次空间使用完毕才扩容，在一定程度上会增加put时候的时间。</p>
+<p>在理想情况下，使用随机哈希吗，节点出现的频率在hash桶中遵循泊松分布，同时给出了桶中元素的个数和概率的对照表。<br>从上表可以看出当桶中元素到达8个的时候，概率已经变得非常小，也就是说用0.75作为负载因子，每个碰撞位置的链表长度超过8个是几乎不可能的。<br>hash容器指定初始容量尽量为2的幂次方。<br>HashMap负载因子为0.75是空间和时间成本的一种折中。                                    </p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/31/JAVA%E5%AE%B9%E5%99%A8%E7%9B%B8%E5%85%B3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wingkywingky">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sagittarius">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/10/31/JAVA%E5%AE%B9%E5%99%A8%E7%9B%B8%E5%85%B3/" class="post-title-link" itemprop="url">JAVA容器相关</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-10-31 20:45:47 / 修改时间：20:58:28" itemprop="dateCreated datePublished" datetime="2019-10-31T20:45:47+08:00">2019-10-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA基础</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="List-Set-Map三者的区别"><a href="#List-Set-Map三者的区别" class="headerlink" title="List,Set,Map三者的区别"></a>List,Set,Map三者的区别</h3><ul>
+<li><strong>List(对付顺序的好帮手)：</strong> List接口存储一组不唯一（可以有多个元素引用相同的对象），有序的对象</li>
+<li><strong>Set(注重独一无二的性质):</strong> 不允许重复的集合。不会有多个元素引用相同的对象。</li>
+<li><strong>Map(用Key来搜索的专家):</strong> 使用键值对存储。Map会维护与Key有关联的值。两个Key可以引用相同的对象，但Key不能重复，典型的Key是String类型，但也可以是任何对象。</li>
+</ul>
+<p><strong>三者的实现类</strong></p>
+<p><strong>List</strong></p>
+<ul>
+<li><strong>Vector:</strong>  Object数组，线性安全</li>
+</ul>
+<ul>
+<li><strong>Arraylist：</strong> Object数组,非线性安全，支持高效的随机元素访问，<strong>空 间浪费主要体现在在list列表的结尾会预留一定的容量空间</strong></li>
+<li><strong>LinkedList：</strong> 双向链表(JDK1.6之前为循环链表，JDK1.7取消了循环)，非线性安全，不支持高效的随机元素访问，<strong>空间花费则体现在它的每一个元素都需要消耗比ArrayList更多的空间（因为要存放直接后继和直接前驱以及数据。</strong></li>
+</ul>
+<p><strong>Set</strong></p>
+<ul>
+<li><strong>HashSet（无序，唯一）:</strong> 基于 HashMap 实现的，底层采用 HashMap 来保存元素</li>
+<li><strong>LinkedHashSet：</strong> LinkedHashSet 继承于 HashSet，并且其内部是通过 LinkedHashMap 来实现的。有点类似于我们之前说的LinkedHashMap 其内部是基于 HashMap 实现一样，不过还是有一点点区别的</li>
+<li><strong>TreeSet（有序，唯一）：</strong> 红黑树(自平衡的排序二叉树)</li>
+</ul>
+<p><strong>Map</strong></p>
+<ul>
+<li><strong>HashMap：</strong> JDK1.8之前HashMap由数组+链表组成的，数组是HashMap的主体，链表则是主要为了解决哈希冲突而存在的（“拉链法”解决冲突）。JDK1.8以后在解决哈希冲突时有了较大的变化，当链表长度大于阈值（默认为8）时，将链表转化为红黑树，以减少搜索时间</li>
+<li><strong>LinkedHashMap：</strong>  LinkedHashMap 继承自  HashMap，所以它的底层仍然是基于拉链式散列结构即由数组和链表或红黑树组成。另外，LinkedHashMap  在上面结构的基础上，增加了一条双向链表，使得上面的结构可以保持键值对的插入顺序。同时通过对链表进行相应的操作，实现了访问顺序相关逻辑。详细可以查看：<a href="https://www.imooc.com/article/22931" target="_blank" rel="noopener">《LinkedHashMap 源码详细分析（JDK1.8）》</a></li>
+<li><strong>Hashtable：</strong> 数组+链表组成的，数组是 HashMap 的主体，链表则是主要为了解决哈希冲突而存在的</li>
+<li><strong>TreeMap：</strong> 红黑树（自平衡的排序二叉树）</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/31/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%9B%B8%E5%85%B3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="wingkywingky">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sagittarius">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/10/31/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%9B%B8%E5%85%B3/" class="post-title-link" itemprop="url">计算机网络相关</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-10-31 10:31:17 / 修改时间：19:55:34" itemprop="dateCreated datePublished" datetime="2019-10-31T10:31:17+08:00">2019-10-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机网络</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="OSI，TCP-IP，五层协议的体系结构，以及各层协议"><a href="#OSI，TCP-IP，五层协议的体系结构，以及各层协议" class="headerlink" title="OSI，TCP/IP，五层协议的体系结构，以及各层协议"></a><strong>OSI，TCP/IP，五层协议的体系结构，以及各层协议</strong></h3><p><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019/7/%E4%BA%94%E5%B1%82%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84.png" alt="五层体系结构"></p>
+<p><strong>OSI分层      （7层）</strong>：物理层、数据链路层、网络层、传输层、会话层、表示层、应用层。</p>
+<p><strong>TCP/IP分层（4层）</strong>：网络接口层、              网际层、运输层、                            应用层。</p>
+<p><strong>五层协议     （5层）</strong>：物理层、数据链路层、网络层、运输层、                            应用层。</p>
+<p><strong>每一层的协议如下：</strong></p>
+<p>物理层：RJ45、CLOCK、IEEE802.3    （中继器，集线器，网关）</p>
+<p>数据链路：PPP、FR、HDLC、VLAN、MAC  （网桥，交换机）</p>
+<p>网络层：IP、ICMP、ARP、RARP、OSPF、IPX、RIP、IGRP、 （路由器）</p>
+<p>传输层：TCP、UDP、SPX</p>
+<p>会话层：NFS、SQL、NETBIOS、RPC</p>
+<p>表示层：JPEG、MPEG、ASII</p>
+<p>应用层：FTP、DNS、Telnet、SMTP、HTTP、WWW、NFS</p>
+<p><strong>每一层的作用如下：</strong></p>
+<p><strong>物理层：</strong>通过媒介传输比特,确定机械及电气规范（比特Bit）</p>
+<p><strong>数据链路层</strong>：将比特组装成帧和点到点的传递（帧Frame）</p>
+<p><strong>网络层</strong>：负责数据包从源到宿的传递和网际互连（包PackeT）</p>
+<p><strong>传输层</strong>：提供端到端的可靠报文传递和错误恢复（段Segment）</p>
+<p><strong>会话层</strong>：建立、管理和终止会话（会话协议数据单元SPDU）</p>
+<p><strong>表示层</strong>：对数据进行翻译、加密和压缩（表示协议数据单元PPDU）</p>
+<p><strong>应用层</strong>：允许访问OSI环境的手段（应用协议数据单元APDU）</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/31/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -782,306 +1133,11 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/30/%E5%85%89%E7%82%B9%E4%BF%A1%E6%81%AF%E9%9D%A2%E7%BB%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="wingkywingky">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sagittarius">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/10/30/%E5%85%89%E7%82%B9%E4%BF%A1%E6%81%AF%E9%9D%A2%E7%BB%8F/" class="post-title-link" itemprop="url">光点信息面经</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-10-30 23:37:26 / 修改时间：23:46:26" itemprop="dateCreated datePublished" datetime="2019-10-30T23:37:26+08:00">2019-10-30</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index">
-                    <span itemprop="name">面试相关</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="第二家公司（光点信息）"><a href="#第二家公司（光点信息）" class="headerlink" title="第二家公司（光点信息）"></a>第二家公司（光点信息）</h3><p><strong>没笔试，直接面试</strong></p>
-<p><strong>先自我介绍</strong></p>
-<p><strong>介绍项目</strong></p>
-<p><strong>学生数据库表是怎么设计的</strong></p>
-<p><strong>学生登录是怎么实现的</strong></p>
-<p><strong>项目中遇到的问题有什么</strong></p>
-<p><strong>JQuery**</strong>的特性**</p>
-<p><strong>有没有改过Tomcat**</strong>的端口**</p>
-<p><strong>http**</strong>有没有了解**</p>
-<p><strong>有没有用过mybatis**</strong>的动态sql**</p>
-<p><strong>Spring**</strong>的核心组件**</p>
-<p>Spring-Bean 、Spring-context、Spring-core</p>
-<p><strong>如何提高数据库的查询效率</strong></p>
-<p><strong>除了Mysql**</strong>以外有没有了解其他数据库**</p>
-<p><strong>平时在学校课下会做什么</strong></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/29/Java%E5%9F%BA%E7%A1%80%E7%9B%B8%E5%85%B3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="wingkywingky">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sagittarius">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/10/29/Java%E5%9F%BA%E7%A1%80%E7%9B%B8%E5%85%B3/" class="post-title-link" itemprop="url">Java基础相关</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-10-29 20:18:41" itemprop="dateCreated datePublished" datetime="2019-10-29T20:18:41+08:00">2019-10-29</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-11-01 14:44:59" itemprop="dateModified" datetime="2019-11-01T14:44:59+08:00">2019-11-01</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
-                    <span itemprop="name">JAVA基础</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="JAVA的三大特性"><a href="#JAVA的三大特性" class="headerlink" title="JAVA的三大特性"></a>JAVA的三大特性</h3><ul>
-<li><p><strong>封装</strong></p>
-<p>封装把一个对象的属性私有化，同时提供一些可以被外界访问的属性的方法，如果属性不想被外界访问，我们大可不必提供方法给外界访问。但是如果一个类没有提供给外界访问的方法，那么这个类也没有什么意义了。</p>
-</li>
-<li><p><strong>继承</strong></p>
-<p>继承是使用已存在的类的定义作为基础建立新类的技术，新类的定义可以增加新的数据或新的功能，也可以用父类的功能，但不能选择性地继承父类。通过使用继承我们能够非常方便地复用以前的代码。</p>
-<p><strong>关于继承如下 3 点请记住：</strong></p>
-<ol>
-<li>子类拥有父类对象所有的属性和方法（包括私有属性和私有方法），但是父类中的私有属性和方法子类是无法访问，<strong>只是拥有</strong>。</li>
-<li>子类可以拥有自己属性和方法，即子类可以对父类进行扩展。</li>
-<li>子类可以用自己的方式实现父类的方法。</li>
-</ol>
-</li>
-<li><p><strong>多态</strong></p>
-<p>所谓多态就是指程序中定义的引用变量所指向的具体类型和通过该引用变量发出的方法调用在编程时并不确定，而是在程序运行期间才确定，即一个引用变量到底会指向哪个类的实例对象，该引用变量发出的方法调用到底是哪个类中实现的方法，必须在由程序运行期间才能决定。</p>
-<p> 在Java中有两种形式可以实现多态：继承（多个子类对同一方法的重写）和接口（实现接口并覆盖接口中同一方法）。</p>
-</li>
-</ul>
-<h3 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h3><h4 id="基本数据类型"><a href="#基本数据类型" class="headerlink" title="基本数据类型"></a>基本数据类型</h4><ul>
-<li>byte/8</li>
-<li>char/16</li>
-<li>short/16</li>
-<li>int/32</li>
-<li>float/32</li>
-<li>long/64</li>
-<li>double/64</li>
-<li>boolean/~</li>
-</ul>
-<h4 id="包装类型"><a href="#包装类型" class="headerlink" title="包装类型"></a>包装类型</h4><p>基本类型都有对应的包装类型，基本类型与其对应的包装类型之间的赋值使用自动装箱与拆箱完成。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Integer x = 2;     // 装箱 调用了 Integer.valueOf(2)</span><br><span class="line">int y = x;         // 拆箱 调用了 X.intValue()</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="String-StringBuffer-和-StringBuilder-的区别"><a href="#String-StringBuffer-和-StringBuilder-的区别" class="headerlink" title="String StringBuffer 和 StringBuilder 的区别"></a>String StringBuffer 和 StringBuilder 的区别</h3><p>String: 用final修饰，不可变，线性安全</p>
-<p>StringBuffer:是线程安全的，内部使用 synchronized 进行同步</p>
-<p>StringBuilder:非线性安全</p>
-<p><strong>对于三者使用的总结：</strong> </p>
-<ol>
-<li>操作少量的数据: 适用String</li>
-<li>单线程操作字符串缓冲区下操作大量数据: 适用StringBuilder</li>
-<li>多线程操作字符串缓冲区下操作大量数据: 适用StringBuffer</li>
-</ol>
-<p><strong>不可变的好处</strong></p>
-<p><strong>1. 可以缓存 hash 值</strong> </p>
-<p>因为 String 的 hash 值经常被使用，例如 String 用做 HashMap 的 key。不可变的特性可以使得 hash 值也不可变，因此只需要进行一次计算。</p>
-<p><strong>2. String Pool 的需要</strong> </p>
-<p>如果一个 String 对象已经被创建过了，那么就会从 String Pool 中取得引用。只有 String 是不可变的，才可能使用 String Pool。</p>
-<p> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/9112288f-23f5-4e53-b222-a46fdbca1603.png" alt="img"> </p>
-<p><strong>3. 安全性</strong> </p>
-<p>String 经常作为参数，String 不可变性可以保证参数不可变。例如在作为网络连接参数的情况下如果 String 是可变的，那么在网络连接过程中，String 被改变，改变 String 对象的那一方以为现在连接的是其它主机，而实际情况却不一定是。</p>
-<p><strong>4. 线程安全</strong> </p>
-<p>String 不可变性天生具备线程安全，可以在多个线程中安全地使用。</p>
-<h3 id="抽象类和接口的区别"><a href="#抽象类和接口的区别" class="headerlink" title="抽象类和接口的区别"></a>抽象类和接口的区别</h3><p>1.接口方法默认修饰符是public，并且不允许定义为 private 或者 protected。抽象方法可以有public、protected和default这些修饰符（抽象方法就是为了被重写所以不能使用private关键字修饰！）。 </p>
-<p>2.一个类可以实现多个接口，但只能继承一个抽象类</p>
-<p>3.抽象类是对类的抽象，是一种模板设计，相关于把子类一些共有的代码抽取出来作为模板来编写，子类只需实现抽象方法即可；接口是对行为的抽象，需要有具体的实现</p>
-<p>4.抽象类不能被实例化，需要继承抽象类才能实例化其子类。</p>
-<h3 id="JAVA四种访问权限"><a href="#JAVA四种访问权限" class="headerlink" title="JAVA四种访问权限"></a>JAVA四种访问权限</h3><p>java有四种访问权限，它们各自的范围如下图所示</p>
-<p><img src="/2019/10/29/Java%E5%9F%BA%E7%A1%80%E7%9B%B8%E5%85%B3/D:%5CJDK%5Cblog%5Csource_posts%5CJava%E5%9F%BA%E7%A1%80%E7%9B%B8%E5%85%B3.assets%5C1409322-20180702171347311-2018214427.png" alt></p>
-<h3 id="重写与重载"><a href="#重写与重载" class="headerlink" title="重写与重载"></a>重写与重载</h3><ul>
-<li><p><strong>重载（Overload）：</strong>发生在同一个类中，方法名必须相同，参数类型不同、个数不同、顺序不同，方法返回值和访问修饰符可以不同，发生在编译时。 　　</p>
-</li>
-<li><p><strong>重写（Override）：</strong> 发生在父子类中，方法名、参数列表必须相同，返回值范围小于等于父类，抛出的异常范围小于等于父类，访问修饰符范围大于等于父类；如果父类方法访问修饰符为 private 则子类就不能重写该方法。</p>
-</li>
-</ul>
-<h3 id="equals和"><a href="#equals和" class="headerlink" title="equals和=="></a>equals和==</h3><p><strong>区别</strong></p>
-<p><strong>==</strong> : 它的作用是判断两个对象的地址是不是相等。即，判断两个对象是不是同一个对象(基本数据类型==比较的是值，引用数据类型==比较的是内存地址)。</p>
-<p><strong>equals()</strong> : 它的作用也是判断两个对象是否相等。但它一般有两种使用情况：</p>
-<ul>
-<li>情况1：类没有覆盖 equals() 方法。则通过 equals() 比较该类的两个对象时，等价于通过“==”比较这两个对象。</li>
-<li>情况2：类覆盖了 equals() 方法。一般，我们都覆盖 equals() 方法来比较两个对象的内容是否相等；若它们的内容相等，则返回 true (即，认为这两个对象相等)。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class test1 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        String a = new String(&quot;ab&quot;); // a 为一个引用</span><br><span class="line">        String b = new String(&quot;ab&quot;); // b为另一个引用,对象的内容一样</span><br><span class="line">        String aa = &quot;ab&quot;; // 放在常量池中</span><br><span class="line">        String bb = &quot;ab&quot;; // 从常量池中查找</span><br><span class="line">        if (aa == bb) // true</span><br><span class="line">            System.out.println(&quot;aa==bb&quot;);</span><br><span class="line">        if (a == b) // false，非同一对象</span><br><span class="line">            System.out.println(&quot;a==b&quot;);</span><br><span class="line">        if (a.equals(b)) // true</span><br><span class="line">            System.out.println(&quot;aEQb&quot;);</span><br><span class="line">        if (42 == 42.0) &#123; // true</span><br><span class="line">            System.out.println(&quot;true&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="hashCode"><a href="#hashCode" class="headerlink" title="hashCode()"></a>hashCode()</h3><p><strong>hashCode()的作用</strong></p>
-<ul>
-<li><p><strong>我们先以“HashSet 如何检查重复”为例子来说明为什么要有 hashCode：</strong> 当你把对象加入  HashSet 时，HashSet 会先计算对象的 hashcode 值来判断对象加入的位置，同时也会与其他已经加入的对象的 hashcode  值作比较，如果没有相符的hashcode，HashSet会假设对象没有重复出现。但是如果发现有相同 hashcode 值的对象，这时会调用 <code>equals（）</code>方法来检查  hashcode 相等的对象是否真的相同。如果两者相同，HashSet  就不会让其加入操作成功。如果不同的话，就会重新散列到其他位置。（摘自我的Java启蒙书《Head first  java》第二版）。这样我们就大大减少了 equals 的次数，相应就大大提高了执行速度。</p>
-<p>通过我们可以看出：<code>hashCode()</code> 的作用就是<strong>获取哈希码</strong>，也称为散列码；它实际上是返回一个int整数。这个<strong>哈希码的作用</strong>是确定该对象在哈希表中的索引位置。<strong>hashCode()在散列表中才有用，在其它情况下没用。</strong>在散列表中hashCode() 的作用是获取对象的散列码，进而确定该对象在散列表中的位置。</p>
-</li>
-</ul>
-<p><strong>hashCode()和equals()</strong></p>
-<ol>
-<li>如果两个对象相等，则hashcode一定也是相同的</li>
-<li>两个对象相等,对两个对象分别调用equals方法都返回true</li>
-<li>两个对象有相同的hashcode值，它们也不一定是相等的</li>
-<li><strong>因此，equals 方法被覆盖过，则 hashCode 方法也必须被覆盖</strong></li>
-<li>hashCode() 的默认行为是对堆上的对象产生独特值。如果没有重写 hashCode()，则该 class 的两个对象无论如何都不会相等（即使这两个对象指向相同的数据）</li>
-</ol>
-<h3 id="关键字"><a href="#关键字" class="headerlink" title="关键字"></a>关键字</h3><h4 id="final"><a href="#final" class="headerlink" title="final"></a>final</h4><p>final关键字主要用在三个地方：变量、方法、类。</p>
-<ol>
-<li>对于一个final变量，如果是基本数据类型的变量，则其数值一旦在初始化之后便不能更改；如果是引用类型的变量，则在对其初始化之后便不能再让其指向另一个对象。</li>
-<li>当用final修饰一个类时，表明这个类不能被继承。final类中的所有成员方法都会被隐式地指定为final方法。</li>
-<li>使用final方法的原因有两个。第一个原因是把方法锁定，以防任何继承类修改它的含义；第二个原因是效率。在早期的Java实现版本中，会将final方法转为内嵌调用。但是如果方法过于庞大，可能看不到内嵌调用带来的任何性能提升（现在的Java版本已经不需要使用final方法进行这些优化了）。类中所有的private方法都隐式地指定为final</li>
-</ol>
-<p><strong>具体可参考文章：</strong><a href="https://juejin.im/post/5ae9b82c6fb9a07ac3634941" target="_blank" rel="noopener">https://juejin.im/post/5ae9b82c6fb9a07ac3634941</a></p>
-<h4 id="static"><a href="#static" class="headerlink" title="static"></a>static</h4><p><strong>1. 静态变量</strong> </p>
-<ul>
-<li><p>静态变量：又称为类变量，也就是说这个变量属于类的，类所有的实例都共享静态变量，可以直接通过类名来访问它。静态变量在内存中只存在一份。</p>
-</li>
-<li><p>实例变量：每创建一个实例就会产生一个实例变量，它与该实例同生共死。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class A &#123;</span><br><span class="line"></span><br><span class="line">    private int x;         // 实例变量</span><br><span class="line">    private static int y;  // 静态变量</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        // int x = A.x;  // Non-static field &apos;x&apos; cannot be referenced from a static context</span><br><span class="line">        A a = new A();</span><br><span class="line">        int x = a.x;</span><br><span class="line">        int y = A.y;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-</li>
-</ul>
-<p><strong>2. 静态方法</strong> </p>
-<p>静态方法在类加载的时候就存在了，它不依赖于任何实例。所以静态方法必须有实现，也就是说它不能是抽象方法。</p>
-<p><strong>3. 静态语句块</strong> </p>
-<p>静态语句块在类初始化时运行一次。</p>
-<p><strong>4. 静态内部类</strong> </p>
-<p>非静态内部类依赖于外部类的实例，而静态内部类不需要。</p>
-<p>静态内部类不能访问外部类的非静态的变量和方法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public class OuterClass &#123;</span><br><span class="line"></span><br><span class="line">    class InnerClass &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    static class StaticInnerClass &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        // InnerClass innerClass = new InnerClass(); // &apos;OuterClass.this&apos; cannot be referenced from a static context</span><br><span class="line">        OuterClass outerClass = new OuterClass();</span><br><span class="line">        InnerClass innerClass = outerClass.new InnerClass();</span><br><span class="line">        StaticInnerClass staticInnerClass = new StaticInnerClass();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p><strong>5.初始化顺序</strong> </p>
-<p>静态变量和静态语句块优先于实例变量和普通语句块，静态变量和静态语句块的初始化顺序取决于它们在代码中的顺序。</p>
-<p>存在继承的情况下，初始化顺序为：</p>
-<ul>
-<li>父类（静态变量、静态语句块）</li>
-<li>子类（静态变量、静态语句块）</li>
-<li>父类（实例变量、普通语句块）</li>
-<li>父类（构造函数）</li>
-<li>子类（实例变量、普通语句块）</li>
-<li>子类（构造函数）</li>
-</ul>
-<h3 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h3><p>Throwable 可以用来表示任何可以作为异常抛出的类，分为两种： <strong>Error</strong>  和 <strong>Exception</strong>。其中 Error 用来表示 JVM 无法处理的错误，Exception 分为两种：</p>
-<ul>
-<li><strong>受检异常</strong> ：需要用 try…catch… 语句捕获并进行处理，并且可以从异常中恢复；</li>
-<li><strong>非受检异常</strong> ：是程序运行时错误，例如除 0 会引发 Arithmetic Exception，此时程序崩溃并且无法恢复。</li>
-</ul>
-<p><img src="/2019/10/29/Java%E5%9F%BA%E7%A1%80%E7%9B%B8%E5%85%B3/D:%5CJDK%5Cblog%5Csource_posts%5CJava%E5%9F%BA%E7%A1%80%E7%9B%B8%E5%85%B3.assets%5CPPjwP.png" alt></p>
-<ul>
-<li>可参考文章：<a href="https://www.tianmaying.com/tutorial/Java-Exception" target="_blank" rel="noopener">https://www.tianmaying.com/tutorial/Java-Exception</a></li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1127,7 +1183,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-count">42</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
